@@ -35,7 +35,7 @@
                             </div>
                             <div class="row g-3 align-items-center mb-3">
                                 <div class="col-sm-3"><p>Office:</p></div>
-                                <div class="col-sm-9"><p>{{$user->office->office_name??'No office assigned'}}</p></div>
+                                <div class="col-sm-9"><p><a class="text-primary text-decoration-none" href="{{($user->office_id??false)?route('office.show',$user->office->id):'#'}}">{{$user->office->office_name??'No office assigned'}}</a></p></div>
                             </div>
                         </div>
                     </div>
