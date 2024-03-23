@@ -9,17 +9,31 @@ use Illuminate\Support\Facades\Auth;
 class DocumentController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         /**
          * Note: Have a can('see-own-docs') and can('see-all-docs')
          * You get the idea.
          */
-        $documents = Document::all();
+        $showAll = $request->all=='1'?true:false;
+        $documents = Document::where('user_id',Auth::user()->id)->get();
+        if($showAll && Auth::user()->can('list all documents'))
+            $documents = Document::all();
         return view('document.index')
-            ->with('documents',$documents);
+            ->with('documents',$documents)
+            ->with('showAll',$showAll);
     }
 
     /**
