@@ -60,7 +60,7 @@ class DocumentController extends Controller
         // create a document route, place it as the office of the user
         // create a document approval route, use JavaScript to create a JSON object
 
-        return redirect('/document')
+        return redirect('/document/'.$document->id)
             ->with('status','success')
             ->with('message', 'Document titled ' . $document->title . ' has been created.');
     }
@@ -68,9 +68,11 @@ class DocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Document $document)
+    public function show(string $id)
     {
-        //
+        $document = Document::find($id);
+        return view('document.view')
+            ->with('document',$document);
     }
 
     /**
