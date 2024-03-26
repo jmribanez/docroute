@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex flex-column">
             <h1>{{$office->office_name}}</h1>
-            <p class="mb-0">{!!empty($office->office_head)?'<em>No head assigned</em>':$office->officeHead->name_first . " " . $office->officeHead->name_family . ", " . $office->office_head_title!!}</p>
+            <p class="mb-0">{!!empty($office->office_head)?'<em>No head assigned</em>':$office->officeHead->name_first . " " . $office->officeHead->name_family . " <i class='bi bi-dot'></i> " . $office->office_head_title!!}</p>
         </div>
         <a href="{{route('office.edit',$office->id)}}" class="btn btn-outline-secondary">Edit</a>
     </div>
