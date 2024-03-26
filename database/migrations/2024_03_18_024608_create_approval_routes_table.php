@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('document_id');
             $table->foreignId('user_id');
-            $table->string('approval_type');
+            $table->enum('approval_type',['sent','approved','rejected','notify']);
             $table->string('action')->nullable();
             $table->dateTime('acted_on')->nullable();
+            $table->string('comment')->nullable();
             $table->timestamps();
         });
     }

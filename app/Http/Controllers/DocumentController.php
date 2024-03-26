@@ -71,6 +71,7 @@ class DocumentController extends Controller
     public function show(string $id)
     {
         $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
         return view('document.view')
             ->with('document',$document);
     }

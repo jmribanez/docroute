@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+<script src="{{ asset('tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea#txt_description',
+    plugins: 'code table lists',
+    toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | indent outdent | bullist numlist | code | table'
+  });
+</script>
 <div class="container">
     <h1 class="mb-3">New Document</h1>
     <form action="{{route('document.store')}}" method="POST" class="card">
