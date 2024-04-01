@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
@@ -56,6 +57,24 @@ class DocumentController extends Controller
         $document->description = $request->description;
         $document->user_id = Auth::user()->id;
         $document->save();
+
+        // check if it has attachments.
+        if($request->hasFile('file_attachments')) {
+            $allowedFileExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+            $files = $request->file('file_attachments');
+            foreach($files as $file) {
+                $filename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                
+                $check = in_array($extension, $allowedFileExtension);
+                if($check) {
+                    $document->attachments()->create([
+                        'orig_filename' => $filename,
+                        'url' => $file->store('attachments')
+                    ]);
+                }
+            }
+        }
         
         // create a document route, place it as the office of the user
         // create a document approval route, use JavaScript to create a JSON object

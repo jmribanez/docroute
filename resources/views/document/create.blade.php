@@ -11,7 +11,7 @@
 </script>
 <div class="container">
     <h1 class="mb-3">New Document</h1>
-    <form action="{{route('document.store')}}" method="POST" class="card">
+    <form action="{{route('document.store')}}" method="POST" class="card" enctype="multipart/form-data">
         @csrf
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -26,7 +26,7 @@
             </div>
             <div class="mb-3">
                 <label for="inputfile_attachments">File Attachments</label>
-                <input type="file" name="file_attachments" id="inputfile_attachments" class="form-control" multiple>
+                <input type="file" name="file_attachments[]" id="inputfile_attachments" class="form-control" multiple>
             </div>
         </div>
     </form>

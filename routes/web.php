@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\UserController;
@@ -24,3 +25,4 @@ Auth::routes();
 Route::resource('/user', UserController::class);
 Route::resource('/document', DocumentController::class);
 Route::resource('/office', OfficeController::class);
+Route::get('/attachment/download/{url}', [AttachmentController::class, 'download'])->name('attachment.download');

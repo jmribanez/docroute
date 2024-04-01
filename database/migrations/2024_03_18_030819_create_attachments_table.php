@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
             $table->string('document_id');
-            $table->foreignId('user_id');
+            $table->string('orig_filename');
             $table->string('url');
             $table->timestamps();
         });
+        // Note: user_id removed from columns because document already belongs to user.
     }
 
     /**

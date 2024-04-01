@@ -10,6 +10,19 @@
                 <div class="card-body">
                     {!!$document->description!!}
                 </div>
+                @if (count($document->attachments)>0)
+                <div class="card-body border-top p-3">
+                    <h5>Attachments</h5>
+                    <div class="list-group">
+                        @foreach ($document->attachments as $attachment)
+                            <a href="{{Storage::url($attachment->url)}}" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="card-footer p-3">
+                    <p class="mb-0">Created by: {{$document->user->name_first . " " .$document->user->name_family . " (" . $document->user->office->office_name . ")" . " on " . $document->created_at}}</p>
+                </div>
+                @endif
             </div>
         </div>
         <div class="col-sm-3 mb-3">
