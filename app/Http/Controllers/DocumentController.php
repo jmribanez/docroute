@@ -68,10 +68,12 @@ class DocumentController extends Controller
                 
                 $check = in_array($extension, $allowedFileExtension);
                 if($check) {
+                    $newFileName = $document->id . "_" . substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
                     $document->attachments()->create([
                         'orig_filename' => $filename,
-                        'url' => $file->store('attachments')
+                        'url' => $newFileName . "." . $extension
                     ]);
+                    $file->storeAs('attachments',$newFileName . "." . $extension);
                 }
             }
         }
@@ -98,17 +100,49 @@ class DocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Document $document)
+    public function edit(string $id)
     {
-        //
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        return view('document.edit')
+            ->with('document',$document);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Document $document)
+    public function update(Request $request, string $id)
     {
-        //
+        $length = 6;
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        $document->title = $request->title;
+        $document->description = $request->description;
+        $document->update();
+
+        // check if it has attachments.
+        if($request->hasFile('file_attachments')) {
+            $allowedFileExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+            $files = $request->file('file_attachments');
+            foreach($files as $file) {
+                $filename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                
+                $check = in_array($extension, $allowedFileExtension);
+                if($check) {
+                    $newFileName = $document->id . "_" . substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
+                    $document->attachments()->create([
+                        'orig_filename' => $filename,
+                        'url' => $newFileName . "." . $extension
+                    ]);
+                    $file->storeAs('attachments',$newFileName . "." . $extension);
+                }
+            }
+        }
+
+        return redirect('/document/'.$document->id)
+            ->with('status','success')
+            ->with('message', 'Document titled ' . $document->title . ' has been updated.');
     }
 
     /**

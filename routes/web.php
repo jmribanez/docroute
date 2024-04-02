@@ -25,4 +25,5 @@ Auth::routes();
 Route::resource('/user', UserController::class);
 Route::resource('/document', DocumentController::class);
 Route::resource('/office', OfficeController::class);
-Route::get('/attachment/download/{url}', [AttachmentController::class, 'download'])->name('attachment.download');
+Route::get('/attachment/{url}/download', [AttachmentController::class, 'download'])->name('attachment.download');
+Route::post('/attachment/{url}/delete', [AttachmentController::class, 'delete'])->name('attachment.delete');

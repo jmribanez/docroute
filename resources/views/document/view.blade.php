@@ -3,11 +3,18 @@
 @section('content')
 <div class="container">
     @include('inc.message')
-    <h1 class="mb-3">{{$document->title}}</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1>{{$document->title}}</h1>
+        </div>
+        <div>
+            <a href="{{route('document.edit',$document->id)}}" class="btn btn-outline-secondary">Edit</a>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-9 mb-3">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body mt-3 p-3">
                     {!!$document->description!!}
                 </div>
                 @if (count($document->attachments)>0)
@@ -15,14 +22,14 @@
                     <h5>Attachments</h5>
                     <div class="list-group">
                         @foreach ($document->attachments as $attachment)
-                            <a href="{{Storage::url($attachment->url)}}" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
+                            <a href="{{asset('storage/attachments/'.$attachment->url)}}" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
                         @endforeach
                     </div>
                 </div>
+                @endif
                 <div class="card-footer p-3">
                     <p class="mb-0">Created by: {{$document->user->name_first . " " .$document->user->name_family . " (" . $document->user->office->office_name . ")" . " on " . $document->created_at}}</p>
                 </div>
-                @endif
             </div>
         </div>
         <div class="col-sm-3 mb-3">
