@@ -151,7 +151,7 @@ class DocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
@@ -162,7 +162,10 @@ class DocumentController extends Controller
                 $attachment->delete();
             }
         }
-        $document->delete();
+        //if($request->permanentlyDelete == "true")
+            $document->forceDelete();
+        //else
+        //    $document->delete();
         return redirect('/document')
             ->with('status','success')
             ->with('message', 'Document titled ' . $document->title . ' has been deleted.');
