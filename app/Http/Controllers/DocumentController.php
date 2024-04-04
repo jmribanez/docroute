@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attachment;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+
 
 class DocumentController extends Controller
 {
@@ -148,8 +151,20 @@ class DocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Document $document)
+    public function destroy(string $id)
     {
-        //
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        $attachments = $document->attachments;
+        if(count($attachments) > 0) {
+            foreach($attachments as $attachment) {
+                Storage::delete('attachments/'.$attachment->url);
+                $attachment->delete();
+            }
+        }
+        $document->delete();
+        return redirect('/document')
+            ->with('status','success')
+            ->with('message', 'Document titled ' . $document->title . ' has been deleted.');
     }
 }

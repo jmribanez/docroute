@@ -30,14 +30,15 @@
                 <input type="file" name="file_attachments[]" id="inputfile_attachments" class="form-control" multiple>
             </div>
         </div>
-        <div class="card-footer p-3">
+        <div class="card-footer p-3 d-flex justify-content-between align-items-center">
             <p class="mb-0">Created by: {{$document->user->name_first . " " .$document->user->name_family . " (" . $document->user->office->office_name . ")" . " on " . $document->created_at}}</p>
+            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
         </div>
     </form>
     <div class="card">
         <div class="card-body">
-            @if (count($document->attachments)>0)
             <h5>Attachments</h5>
+            @if (count($document->attachments)>0)
             <div class="list-group">
                 @foreach ($document->attachments as $attachment)
                     <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -46,13 +47,36 @@
                             <form action="{{route('attachment.delete',$attachment->url)}}" method="post">@csrf <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button></form>
                         </div>
                     </div>
-                    
                 @endforeach
             </div>
             @else
             <p>There are no attachments.</p>
             @endif
         </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalBox" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" action="{{route('document.destroy',$document->id)}}" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Confirm Delete</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete the document titled {{$document->title}} and its attachments.</p>
+                <p>Are you sure you want to continue? This document cannot be recovered if <strong>Permanently Delete</strong> is checked.</p>
+            </div>
+            <div class="modal-footer">
+                <div class="form-check me-auto small">
+                    <input class="form-check-input" type="checkbox" name="permanentlyDelete" value="true" id="chkPermaDelete">
+                    <label class="form-check-label" for="chkPermaDelete">Permanently Delete</label>
+                </div>
+                <input type="submit" value="Delete" class="btn btn-danger">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
