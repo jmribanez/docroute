@@ -32,6 +32,9 @@
                         <li class="nav-item">
                             <a href="{{route('document.index')}}" class="nav-link">Documents</a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{route('template.index')}}" class="nav-link">Templates</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

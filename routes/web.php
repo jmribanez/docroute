@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,5 +26,6 @@ Auth::routes();
 Route::resource('/user', UserController::class);
 Route::resource('/document', DocumentController::class);
 Route::resource('/office', OfficeController::class);
+Route::resource('/template', TemplateController::class);
 Route::get('/attachment/{url}/download', [AttachmentController::class, 'download'])->name('attachment.download');
 Route::post('/attachment/{url}/delete', [AttachmentController::class, 'delete'])->name('attachment.delete');
