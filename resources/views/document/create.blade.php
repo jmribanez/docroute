@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <textarea name="description" id="txt_description" cols="30" rows="10" class="form-control"></textarea>
+                <textarea name="description" id="txt_description" cols="30" rows="10" class="form-control">{{$textareacontent??''}}</textarea>
             </div>
             <div class="mb-3">
                 <label for="inputfile_attachments">File Attachments</label>

@@ -9,6 +9,7 @@
             <p>{{$template->description}}</p>
         </div>
         <div>
+            <a href="{{route('document.create',['t'=>$template->id])}}" class="btn btn-primary me-2"><i class="bi bi-file-earmark-ruled"></i> Use Template</a>
             <a href="{{route('template.edit',$template->id)}}" class="btn btn-outline-secondary">Edit</a>
         </div>
     </div>

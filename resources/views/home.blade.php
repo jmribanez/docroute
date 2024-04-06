@@ -8,7 +8,15 @@
             <div class="card mb-3">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <h3>Documents</h3>
-                    <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
+                    <div class="btn-group" role="group">
+                        <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{route('template.index')}}">From Template</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="p-3">
                     @if(count($documents)>0)

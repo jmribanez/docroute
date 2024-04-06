@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attachment;
 use App\Models\Document;
+use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -43,9 +44,16 @@ class DocumentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('document.create');
+        $textareacontent = null;
+        if($request->t != null) {
+            $template = Template::find($request->t);
+            $template??abort('404','Template does not exist.');
+            $textareacontent = $template->content;
+        }
+        return view('document.create')
+            ->with('textareacontent',$textareacontent);
     }
 
     /**

@@ -5,7 +5,15 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Documents</h1>
         <div>
-            <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
+            <div class="btn-group" role="group">
+                <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{route('template.index')}}">From Template</a></li>
+                    </ul>
+                </div>
+            </div>
             @can('list all documents')
             @if(!$showAll)
             <a href="?all=1" class="btn btn-outline-secondary ms-1">Show All</a>
