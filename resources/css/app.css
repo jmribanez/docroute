@@ -1,4 +1,17 @@
 /* -- GLOBAL STYLES -- */
+.navbar {
+    background-color: #5c0015;
+}
 .navbar-brand {
     font-weight: 700;
+    color: white;
+}
+.navbar-brand:hover {
+    color: #bd99a1;
+}
+.nav-link {
+    color: white;
+}
+.nav-link:hover, .nav-link.dropdown-toggle.show{
+    color: #bd99a1;
 }
