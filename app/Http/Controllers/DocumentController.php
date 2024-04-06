@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attachment;
 use App\Models\Document;
+use App\Models\DocumentRoute;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,6 +105,11 @@ class DocumentController extends Controller
     {
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
+        // Check if document is being opened by owner or someone who has already viewed it.
+        // If it has not yet been opeend by the guest, redirect to receive/doc_id
+        $docroute = DocumentRoute::where('document_id',$id)->andWhere('user_id',Auth::user()->id)->first(); 
+        if($document->user->id != Auth::user()->id || count($docroute) > 0)
+            return redirect('/receive/'.$id);
         return view('document.view')
             ->with('document',$document);
     }
