@@ -124,6 +124,11 @@ class DocumentController extends Controller
     {
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
+        $docroute = DocumentRoute::where('document_id',$id)->get();
+        if(count($docroute)>0)
+            return redirect('document/'.$id)
+                ->with('status','info')
+                ->with('message','Routed documents are no longer editable.');
         return view('document.edit')
             ->with('document',$document);
     }

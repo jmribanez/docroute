@@ -8,7 +8,9 @@
             <h1>{{$document->title}}</h1>
         </div>
         <div>
+            @if(count($docroute)==0)
             <a href="{{route('document.edit',$document->id)}}" class="btn btn-outline-secondary">Edit</a>
+            @endif
         </div>
     </div>
     <div class="row">
