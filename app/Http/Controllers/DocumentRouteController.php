@@ -19,17 +19,58 @@ class DocumentRouteController extends Controller
         $this->middleware('auth');
     }
 
+    public function send(string $id) {
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        $docroute = new DocumentRoute;
+        $docroute->document_id = $id;
+        $docroute->office_id = Auth::user()->office_id;
+        $docroute->user_id = Auth::user()->id;
+        $docroute->received_on = date("Y-m-d H:i:s");
+        $docroute->save();
+        return redirect('/document/'.$id)
+            ->with('status','success')
+            ->with('message','The document can now be routed.');
+    }
+
     public function receive(string $id) {
         // This function receives the document_id
         // It will call a collection of records with this document_id
         // It will append the present date and time, user, and their present office to the new record.
 
-        // Check if the document is being opened by the owner or someone who already opened it
+        // Check if the document is being opened by the owner or someone who already received it
         $document = Document::find($id);
-        $docroute = DocumentRoute::where('document_id',$id)->andWhere('user_id',Auth::user()->id)->first(); 
         $document??abort('404','Document does not exist.');
-        if($document->user->id == Auth::user()->id || count($docroute) > 0)
-            return redirect('/document/'.$id);
+        // Check if the document has already been sent for routing (if there is already an entry for document_id)
+        $docroute = DocumentRoute::where('document_id',$id)->get();
+        if(count($docroute) == 0)
+        abort('403','Document has not been sent for routing.');
         
+        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first(); 
+        if($document->user->id == Auth::user()->id || $docroute != null)
+            return redirect('/document/'.$id);
+        else {
+            $docroute = DocumentRoute::where('document_id',$id)->get();
+            return view('documentroute.receive')
+                ->with('document', $document)
+                ->with('docroute', $docroute);
+        }
+    }
+
+    public function confirm(string $id) {
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        $docroute = DocumentRoute::where('document_id',$id)->first();
+        $docroute??abort('403','Document has not been sent for routing.');
+
+        $docroute = new DocumentRoute;
+        $docroute->document_id = $id;
+        $docroute->office_id = Auth::user()->office_id;
+        $docroute->user_id = Auth::user()->id;
+        $docroute->received_on = date("Y-m-d H:i:s");
+        $docroute->save();
+        return redirect('/document/'.$id)
+            ->with('status','success')
+            ->with('message','The document has been received.');
     }
 }

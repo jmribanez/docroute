@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentRouteController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
+use App\Models\DocumentRoute;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,3 +31,6 @@ Route::resource('/office', OfficeController::class);
 Route::resource('/template', TemplateController::class);
 Route::get('/attachment/{url}/download', [AttachmentController::class, 'download'])->name('attachment.download');
 Route::post('/attachment/{url}/delete', [AttachmentController::class, 'delete'])->name('attachment.delete');
+Route::get('/receive/{id}', [DocumentRouteController::class, 'receive'])->name('documentroute.receive');
+Route::post('/receive/{id}', [DocumentRouteController::class, 'confirm'])->name('documentroute.confirm');
+Route::post('/send/{id}', [DocumentRouteController::class, 'send'])->name('documentroute.send');

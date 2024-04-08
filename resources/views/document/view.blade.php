@@ -36,6 +36,26 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h3 class="mb-3">Routing</h3>
+                    @if(count($docroute)==0)
+                    <form action="{{route('documentroute.send',$document->id)}}" method="post" class="d-grid">
+                    @csrf
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="d-block bi bi-exclamation-circle text-danger fs-5 me-2"></i>
+                        <p class="mb-0">Sending a document for routing will disable editing.</p>
+                    </div>
+                    
+                    <input type="submit" class="btn btn-primary" value="Send">
+                    </form>
+                    @else
+                    <ul class="list-group list-group-flush">
+                        @foreach ($docroute as $dr)
+                        <li class="list-group-item">
+                            <h5 class="mb-1">{{$dr->user->name_first . " " . $dr->user->name_family}}</h5>
+                            <p>{{$dr->received_on}}</p>
+                        </li>
+                        @endforeach
+                    </ul>
+                    @endif
                 </div>
             </div>
             <div class="card">

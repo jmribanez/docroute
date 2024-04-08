@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DocumentRoute extends Model
 {
@@ -17,4 +18,12 @@ class DocumentRoute extends Model
      * Documents marked final cannot be edited.
      * For the meantime, even attachments are final.
      */
+
+     public function user() : BelongsTo {
+        return $this->belongsTo(User::class);
+     }
+
+     public function document() : BelongsTo {
+        return $this->belongsTo(Document::class);
+     }
 }

@@ -107,11 +107,14 @@ class DocumentController extends Controller
         $document??abort('404','Document does not exist.');
         // Check if document is being opened by owner or someone who has already viewed it.
         // If it has not yet been opeend by the guest, redirect to receive/doc_id
-        $docroute = DocumentRoute::where('document_id',$id)->andWhere('user_id',Auth::user()->id)->first(); 
-        if($document->user->id != Auth::user()->id || count($docroute) > 0)
+        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first(); 
+        if($document->user->id != Auth::user()->id && $docroute == null) {
             return redirect('/receive/'.$id);
+        }
+        $docroute = DocumentRoute::where('document_id',$id)->get();
         return view('document.view')
-            ->with('document',$document);
+            ->with('document',$document)
+            ->with('docroute',$docroute);
     }
 
     /**
