@@ -46,8 +46,8 @@ class DocumentRouteController extends Controller
         if(count($docroute) == 0)
         abort('403','Document has not been sent for routing.');
         
-        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first(); 
-        if($document->user->id == Auth::user()->id || $docroute != null)
+        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('received_on')->first(); 
+        if($document->user->id == Auth::user()->id && $docroute != null)
             return redirect('/document/'.$id);
         else {
             $docroute = DocumentRoute::where('document_id',$id)->get();
@@ -63,12 +63,18 @@ class DocumentRouteController extends Controller
         $docroute = DocumentRoute::where('document_id',$id)->first();
         $docroute??abort('403','Document has not been sent for routing.');
 
-        $docroute = new DocumentRoute;
-        $docroute->document_id = $id;
-        $docroute->office_id = Auth::user()->office_id;
-        $docroute->user_id = Auth::user()->id;
-        $docroute->received_on = date("Y-m-d H:i:s");
-        $docroute->save();
+        $docroute = DocumentRoute::where('user_id',Auth::user()->id)->where('document_id',$id)->first();
+        if($docroute == null) {
+            $docroute = new DocumentRoute;
+            $docroute->document_id = $id;
+            $docroute->office_id = Auth::user()->office_id;
+            $docroute->user_id = Auth::user()->id;
+            $docroute->received_on = date("Y-m-d H:i:s");
+            $docroute->save();
+        } else {
+            $docroute->received_on = date("Y-m-d H:i:s");
+            $docroute->update();
+        }
         return redirect('/document/'.$id)
             ->with('status','success')
             ->with('message','The document has been received.');

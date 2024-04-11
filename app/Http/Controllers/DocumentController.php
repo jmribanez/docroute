@@ -34,12 +34,15 @@ class DocumentController extends Controller
          * You get the idea.
          */
         $showAll = $request->all=='1'?true:false;
-        $shared_documents = DocumentRoute::select('documents.*')->where('document_routes.user_id',Auth::user()->id)->join('documents','documents.id','=','document_routes.document_id');
+        $shared_documents = DocumentRoute::select('documents.*')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('received_on')->join('documents','documents.id','=','document_routes.document_id');
         $documents = Document::where('user_id',Auth::user()->id)->union($shared_documents)->get();
+        $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
+        
         if($showAll && Auth::user()->can('list all documents'))
             $documents = Document::all();
         return view('document.index')
             ->with('documents',$documents)
+            ->with('unread_documents',$unread_documents)
             ->with('showAll',$showAll);
     }
 
@@ -108,8 +111,8 @@ class DocumentController extends Controller
         $document??abort('404','Document does not exist.');
         // Check if document is being opened by owner or someone who has already viewed it.
         // If it has not yet been opeend by the guest, redirect to receive/doc_id
-        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first(); 
-        if($document->user->id != Auth::user()->id && $docroute == null) {
+        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('received_on')->first(); 
+        if($docroute == null) {
             return redirect('/receive/'.$id);
         }
         $docroute = DocumentRoute::where('document_id',$id)->get();

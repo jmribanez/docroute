@@ -138,4 +138,9 @@ class UserController extends Controller
             ->with('status','success')
             ->with('message',$user->name_first . ' ' . $user->name_family . ' was deleted.');
     }
+
+    public function ajax_findUser(string $searchname) {
+        $users = User::select('id','name_family','name_first')->where('name_family','like',$searchname.'%')->orWhere('name_first','like',$searchname.'%')->get();
+        return response()->json($users);
+    }
 }
