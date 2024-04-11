@@ -34,7 +34,8 @@ class DocumentController extends Controller
          * You get the idea.
          */
         $showAll = $request->all=='1'?true:false;
-        $documents = Document::where('user_id',Auth::user()->id)->get();
+        $shared_documents = DocumentRoute::select('documents.*')->where('document_routes.user_id',Auth::user()->id)->join('documents','documents.id','=','document_routes.document_id');
+        $documents = Document::where('user_id',Auth::user()->id)->union($shared_documents)->get();
         if($showAll && Auth::user()->can('list all documents'))
             $documents = Document::all();
         return view('document.index')
