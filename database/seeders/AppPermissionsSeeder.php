@@ -48,56 +48,85 @@ class AppPermissionsSeeder extends Seeder
 
         // Seed Root Offices
         $office1 = Office::factory()->create([
-            'office_name' => 'Office of the Campus Director',
+            'office_name' => 'Office of the University President',
             'reports_to_office' => 1,
-            'office_head_title' => 'Campus Director',
+            'office_head' => 2,
+            'office_head_title' => 'University President',
         ]);
 
         $office2 = Office::factory()->create([
-            'office_name' => 'Curriculum and Instruction Division',
+            'office_name' => 'Office of the University and Board Secretary',
             'reports_to_office' => 1,
-            'office_head_title' => 'CID Chief'
+            'office_head_title' => 'University and Board Secretary'
         ]);
 
         $office3 = Office::factory()->create([
-            'office_name' => 'Student Services Divison',
+            'office_name' => 'Office of the Executive Vice President',
             'reports_to_office' => 1,
-            'office_head_title' => 'SSD Chief'
+            'office_head' => 4,
+            'office_head_title' => 'Executive Vice President'
         ]);
 
         $office4 = Office::factory()->create([
-            'office_name' => 'Computer Science Unit',
-            'reports_to_office' => 2,
-            'office_head_title' => 'Unit Head'
+            'office_name' => 'Office of the Vice President for Administration and Finance',
+            'reports_to_office' => 3,
+            'office_head' => 4,
+            'office_head_title' => 'Vice President for Administration and Finance'
         ]);
 
         $office5 = Office::factory()->create([
-            'office_name' => 'Engineering and Technology Unit',
-            'reports_to_office' => 2,
-            'office_head_title' => 'Unit Head'
+            'office_name' => 'Office of the Vice President for Academic Affairs',
+            'reports_to_office' => 3,
+            'office_head' => 4,
+            'office_head_title' => 'Vice President for Academic Affairs'
         ]);
 
         $office6 = Office::factory()->create([
-            'office_name' => 'Finance and Administrative Division',
-            'reports_to_office' => 1,
-            'office_head_title' => 'FAD Chief'
+            'office_name' => 'College of Computing Studies',
+            'reports_to_office' => 5,
+            'office_head' => 9,
+            'office_head_title' => 'Dean'
         ]);
 
         $office7 = Office::factory()->create([
-            'office_name' => 'Information Technology Unit',
-            'reports_to_office' => 6,
-            'office_head_title' => 'IT Head'
+            'office_name' => 'Office of the University Registrar',
+            'reports_to_office' => 5,
+            'office_head' => 10,
+            'office_head_title' => 'University Registrar'
         ]);
 
+        $office8 = Office::factory()->create([
+            'office_name' => 'Office of the Vice President for Research, Innovation, Training and Extension',
+            'reports_to_office' => 3,
+            'office_head_title' => 'Vice President for Research, Innovation, Training and Extension'
+        ]);
+
+        $office9 = Office::factory()->create([
+            'office_name' => 'Management Information Systems Office',
+            'reports_to_office' => 8,
+            'office_head' => 1,
+            'office_head_title' => 'Director'
+        ]);
+
+
         // Seed User Accounts
+
         $user1 = User::factory()->create([
-            'name_family' => 'Mouse',
-            'name_first' => 'Mickey',
-            'email' => 'mickey@mail.com',
-            'office_id' => 7,
+            'name_family' => 'Quito',
+            'name_first' => 'Angelito',
+            'email' => 'angelito@mail.com',
+            'office_id' => 9,
             'password' => Hash::make('abc.123')
         ]);
         $user2 = User::factory()->create([
+            'name_family' => 'Baking',
+            'name_first' => 'Enrique',
+            'email' => 'enrique@mail.com',
+            'office_id' => 1,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user3 = User::factory()->create([
             'name_family' => 'Robles',
             'name_first' => 'Princess',
             'email' => 'princess@mail.com',
@@ -105,59 +134,107 @@ class AppPermissionsSeeder extends Seeder
             'password' => Hash::make('abc.123')
         ]);
 
-        $user3 = User::factory()->create([
-            'name_family' => 'Diaz',
-            'name_first' => 'Theresa Anne',
-            'email' => 'theresa@mail.com',
-            'office_id' => 1,
-            'password' => Hash::make('abc.123')
-        ]);
-
         $user4 = User::factory()->create([
-            'name_family' => 'Coronel',
-            'name_first' => 'Renz',
-            'email' => 'renz@mail.com',
-            'office_id' => 2,
+            'name_family' => 'Hernandez',
+            'name_first' => 'Reden',
+            'email' => 'reden@mail.com',
+            'office_id' => 5,
             'password' => Hash::make('abc.123')
         ]);
 
         $user5 = User::factory()->create([
-            'name_family' => 'Morante',
-            'name_first' => 'Karizz Anne',
-            'email' => 'karizz@mail.com',
+            'name_family' => 'Abulencia',
+            'name_first' => 'Erwinda',
+            'email' => 'erwinda@mail.com',
             'office_id' => 2,
             'password' => Hash::make('abc.123')
         ]);
 
         $user6 = User::factory()->create([
-            'name_family' => 'Ibanez',
-            'name_first' => 'Jan Michael',
-            'email' => 'jm@mail.com',
-            'office_id' => 4,
+            'name_family' => 'Manabat',
+            'name_first' => 'Janina',
+            'email' => 'janina@mail.com',
+            'office_id' => 3,
             'password' => Hash::make('abc.123')
         ]);
 
         $user7 = User::factory()->create([
-            'name_family' => 'Cruz',
-            'name_first' => 'Mark Paolo',
-            'email' => 'mark@mail.com',
+            'name_family' => 'Ramos',
+            'name_first' => 'Roxanne',
+            'email' => 'roxanne@mail.com',
             'office_id' => 4,
             'password' => Hash::make('abc.123')
         ]);
 
         $user8 = User::factory()->create([
-            'name_family' => 'Quioc',
-            'name_first' => 'Mary Anne',
-            'email' => 'maryanne@mail.com',
-            'office_id' => 4,
+            'name_family' => 'Coronel',
+            'name_first' => 'Renz',
+            'email' => 'renz@mail.com',
+            'office_id' => 5,
             'password' => Hash::make('abc.123')
         ]);
 
         $user9 = User::factory()->create([
+            'name_family' => 'Canlas',
+            'name_first' => 'Joel',
+            'email' => 'joel@mail.com',
+            'office_id' => 6,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user10 = User::factory()->create([
+            'name_family' => 'Mallari',
+            'name_first' => 'Dolores',
+            'email' => 'dolores@mail.com',
+            'office_id' => 7,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user11 = User::factory()->create([
+            'name_family' => 'Ibanez',
+            'name_first' => 'Jan Michael',
+            'email' => 'jm@mail.com',
+            'office_id' => 6,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user12 = User::factory()->create([
+            'name_family' => 'Cruz',
+            'name_first' => 'Mark Paolo',
+            'email' => 'mark@mail.com',
+            'office_id' => 6,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user13 = User::factory()->create([
+            'name_family' => 'Quioc',
+            'name_first' => 'Mary Ann',
+            'email' => 'mary@mail.com',
+            'office_id' => 6,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user14 = User::factory()->create([
             'name_family' => 'Tibay',
             'name_first' => 'Jona',
             'email' => 'jona@mail.com',
-            'office_id' => 4,
+            'office_id' => 6,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user15 = User::factory()->create([
+            'name_family' => 'Bundalian',
+            'name_first' => 'Rina',
+            'email' => 'rina@mail.com',
+            'office_id' => 6,
+            'password' => Hash::make('abc.123')
+        ]);
+
+        $user16 = User::factory()->create([
+            'name_family' => 'Manuel',
+            'name_first' => 'Regz',
+            'email' => 'regz@mail.com',
+            'office_id' => 9,
             'password' => Hash::make('abc.123')
         ]);
 
@@ -170,5 +247,12 @@ class AppPermissionsSeeder extends Seeder
         $user7->assignRole($roleStandard);
         $user8->assignRole($roleStandard);
         $user9->assignRole($roleStandard);
+        $user10->assignRole($roleStandard);
+        $user11->assignRole($roleStandard);
+        $user12->assignRole($roleStandard);
+        $user13->assignRole($roleStandard);
+        $user14->assignRole($roleStandard);
+        $user15->assignRole($roleStandard);
+        $user16->assignRole($roleAdmin);
     }
 }
