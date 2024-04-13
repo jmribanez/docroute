@@ -46,8 +46,8 @@ class DocumentRouteController extends Controller
         if(count($docroute) == 0)
         abort('403','Document has not been sent for routing.');
         
-        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('received_on')->first(); 
-        if($document->user->id == Auth::user()->id && $docroute != null)
+        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first(); 
+        if($document->user->id == Auth::user()->id || $docroute != null)
             return redirect('/document/'.$id);
         else {
             $docroute = DocumentRoute::where('document_id',$id)->get();

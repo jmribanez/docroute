@@ -10,7 +10,7 @@ class DocumentRoute extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['document_id','office_id','user_id','received_on','comment'];
+    protected $fillable = ['document_id','office_id','user_id','received_on','sender_id','sent_on','comment'];
 
     /**
      * NOTE: Apr 4
@@ -25,5 +25,9 @@ class DocumentRoute extends Model
 
      public function document() : BelongsTo {
         return $this->belongsTo(Document::class);
+     }
+
+     public function sender() : BelongsTo {
+         return $this->belongsTo(User::class,'sender_id');
      }
 }

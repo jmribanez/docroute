@@ -140,7 +140,7 @@ class UserController extends Controller
     }
 
     public function ajax_findUser(string $searchname) {
-        $users = User::select('id','name_family','name_first')->where('name_family','like',$searchname.'%')->orWhere('name_first','like',$searchname.'%')->get();
+        $users = User::select('users.id','name_family','name_first','office_name')->where('name_family','like','%'.$searchname.'%')->orWhere('name_first','like','%'.$searchname.'%')->join('offices','office_id','=','offices.id')->get();
         return response()->json($users);
     }
 }

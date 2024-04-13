@@ -59,6 +59,7 @@
                                 </a>
                                 <hr class="dropdown-divider">
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a href="{{route('user.show',Auth::user()->id)}}" class="dropdown-item">My Profile</a>
                                     <a href="{{route('office.index')}}" class="dropdown-item">Offices</a>
                                     @can('list users')
                                     <a href="{{route('user.index')}}" class="dropdown-item">Users</a>

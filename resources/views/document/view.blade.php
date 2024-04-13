@@ -57,6 +57,9 @@
                         </li>
                         @endforeach
                     </ul>
+                    <div class="d-grid">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#routingModal">Send</button>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -112,4 +115,69 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="routingModal" tabindex="-1" aria-labelledby="routingModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Send to recepients</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="searchname" class="form-control" placeholder="Find by name" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="findByName()">Search</button>
+                </div>
+                <ul class="list-group mb-3" id="search_list">
+                    <li class="list-group-item"><em>Empty</em></li>
+                </ul>
+                <p class="mb-1"><strong>Recepients</strong></p>
+                <ul class="list-group" id="recepient_list">
+                    <li class="list-group-item"><em>Empty</em></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var userList = [];
+    var recepientList = [];
+    function displaySearchList() {
+        document.getElementById('search_list').innerHTML = "";
+        if(userList.length>0) {
+            for(i=0; i<userList.length; i++) {
+                document.getElementById('search_list').innerHTML += "<li class='list-group-item'>" + userList[i].name_first + " " + userList[i].name_family + " (" + userList[i].office_name +")</li>";
+            }
+        } else {
+            document.getElementById('search_list').innerHTML += "<li class='list-group-item'><em>Empty</em></li>";
+        }
+    }
+    function displayRecepientList() {
+
+    }
+    function findByName() {
+        var searchname = document.getElementById('searchname').value.trim();
+        if(searchname == "")
+        { alert('The search box is empty.') }
+        else {
+            $.ajax({
+                url: '{{url("findUser") . "/"}}'+searchname,
+                type: 'GET',
+                success: function(response) {
+                    userList = response;
+                    displaySearchList();
+                }
+            });
+        }
+    }
+    function addToList() {
+
+    }
+    function removeFromList() {
+
+    }
+</script>
 @endsection

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('office_id');
             $table->foreignId('user_id');
             $table->dateTime('received_on')->nullable();
+            $table->foreignId('sender_id')->nullable();
+            $table->dateTime('sent_on')->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();
         });
