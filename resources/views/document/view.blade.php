@@ -53,7 +53,7 @@
                         @foreach ($docroute as $dr)
                         <li class="list-group-item">
                             <h5 class="mb-1">{{$dr->user->name_first . " " . $dr->user->name_family}}</h5>
-                            <p>{{$dr->received_on}}</p>
+                            <p>{{$dr->received_on??'Not yet received'}}</p>
                         </li>
                         @endforeach
                     </ul>
@@ -127,15 +127,16 @@
                     <input type="text" id="searchname" class="form-control" placeholder="Find by name" aria-label="Recipient's username" aria-describedby="button-addon2">
                     <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="findByName()">Search</button>
                 </div>
-                <ul class="list-group mb-3" id="search_list">
-                    <li class="list-group-item"><em>Empty</em></li>
-                </ul>
+                <div class="list-group mb-3" id="search_list">
+                    <div class="list-group-item disabled"><em>Empty</em></div>
+                </div>
                 <p class="mb-1"><strong>Recepients</strong></p>
-                <ul class="list-group" id="recepient_list">
-                    <li class="list-group-item"><em>Empty</em></li>
-                </ul>
+                <div class="list-group" id="recepient_list">
+                    <div class="list-group-item disabled"><em>Empty</em></div>
+                </div>
             </div>
             <div class="modal-footer">
+                <form action="{{route('documentroute.sendToRecepient')}}" method="post">@csrf <input type="hidden" id="txt_recepients" name="recepients"><input type="hidden" name="document_id" value="{{$document->id}}"><input type="submit" value="Send" class="btn btn-primary"></form>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -149,14 +150,21 @@
         document.getElementById('search_list').innerHTML = "";
         if(userList.length>0) {
             for(i=0; i<userList.length; i++) {
-                document.getElementById('search_list').innerHTML += "<li class='list-group-item'>" + userList[i].name_first + " " + userList[i].name_family + " (" + userList[i].office_name +")</li>";
+                document.getElementById('search_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action' onclick='addToList("+i+")'>" + userList[i].name_first + " " + userList[i].name_family + " (" + userList[i].office_name +")</a>";
             }
         } else {
-            document.getElementById('search_list').innerHTML += "<li class='list-group-item'><em>Empty</em></li>";
+            document.getElementById('search_list').innerHTML += "<div class='list-group-item disabled'><em>Empty</em></div>";
         }
     }
     function displayRecepientList() {
-
+        document.getElementById('recepient_list').innerHTML = "";
+        if(recepientList.length>0) {
+            for(i=0; i<recepientList.length; i++) {
+                document.getElementById('recepient_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action'>" + recepientList[i].name_first + " " + recepientList[i].name_family + " (" + recepientList[i].office_name +")</a>";
+            }
+        } else {
+            document.getElementById('recepient_list').innerHTML += "<div class='list-group-item disabled'><em>Empty</em></div>";
+        }
     }
     function findByName() {
         var searchname = document.getElementById('searchname').value.trim();
@@ -173,11 +181,17 @@
             });
         }
     }
-    function addToList() {
-
+    function addToList(id) {
+        var user = userList[id];
+        recepientList.push(user);
+        displayRecepientList();
+        prepareToSend();
     }
     function removeFromList() {
 
+    }
+    function prepareToSend() {
+        document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
     }
 </script>
 @endsection

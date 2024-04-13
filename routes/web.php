@@ -34,4 +34,5 @@ Route::post('/attachment/{url}/delete', [AttachmentController::class, 'delete'])
 Route::get('/receive/{id}', [DocumentRouteController::class, 'receive'])->name('documentroute.receive');
 Route::post('/receive/{id}', [DocumentRouteController::class, 'confirm'])->name('documentroute.confirm');
 Route::post('/send/{id}', [DocumentRouteController::class, 'send'])->name('documentroute.send');
+Route::post('/sendToRecepients', [DocumentRouteController::class, 'sendToRecepients'])->name('documentroute.sendToRecepient');
 Route::get('/findUser/{searchname}',[UserController::class, 'ajax_findUser'])->name('user.find');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\DocumentRoute;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,7 @@ class DocumentRouteController extends Controller
         if(count($docroute) == 0)
         abort('403','Document has not been sent for routing.');
         
-        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first(); 
+        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('received_on')->first(); 
         if($document->user->id == Auth::user()->id || $docroute != null)
             return redirect('/document/'.$id);
         else {
@@ -78,5 +79,32 @@ class DocumentRouteController extends Controller
         return redirect('/document/'.$id)
             ->with('status','success')
             ->with('message','The document has been received.');
+    }
+
+    public function sendToRecepients(Request $request) {
+        $document_id = $request->document_id;
+        $sender_id = Auth::user()->id;
+        $recepients = json_decode($request->recepients);
+        $document = Document::find($document_id);
+        $document??abort('404','Document does not exist.');
+        foreach($recepients as $r) {
+            $user = User::find($r->id);
+            if($user==null)
+                continue;
+            // Check if user has already received the document
+            $docroute = DocumentRoute::where('user_id',$r->id)->where('document_id',$document_id)->first();
+            if($docroute != null)
+                continue;
+            $docroute = new DocumentRoute;
+            $docroute->document_id = $document_id;
+            $docroute->office_id = $user->office->id;
+            $docroute->user_id = $user->id;
+            $docroute->sender_id = Auth::user()->id;
+            $docroute->sent_on = date("Y-m-d H:i:s");
+            $docroute->save();
+        }
+        return redirect('/document/'.$document_id)
+            ->with('status','success')
+            ->with('message','Document has been sent to '.count($recepients).' recepients');
     }
 }
