@@ -11,8 +11,8 @@
             <p>The document has not yet been sent for routing.</p>
             @elseif($mydocroute == null)
             <p>You are not authorized to view this document. Please contact the author or an approver to receive access.</p>
-            @elseif($mydocroute->action == 'Notify' && $mydocroute->acted_on != null)
-            <p>To view the document, please click Confirm Receipt to acknowledge that it is with you.</p>
+            @elseif(($mydocroute->action == 'Notify' && $mydocroute->acted_on != null) || $myturn && $mydocroute->action == 'Approve')
+            <p>To view the document, please click Confirm Receipt to receive and open the document.</p>
             <form action="{{route('documentroute.confirm',$document->id)}}" method="post">
                 @csrf
                 <input type="submit" class="btn btn-primary" value="Confirm Receipt">
@@ -20,8 +20,6 @@
             @else
             <p>The document has not yet gone through all needed approvers.</p>
             @endif
-
-
         </div>
         <div class="col-sm-3">
             <div class="card">

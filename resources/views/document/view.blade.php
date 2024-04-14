@@ -56,6 +56,9 @@
                         <li class="list-group-item">
                             <p class="fw-bold mb-0">{{$dr->user->name_first . " " . $dr->user->name_family}}</p>
                             <p class="small mb-0">{{$dr->action??'Not yet received'}}</p>
+                            @if(!empty($dr->comment))
+                            <p class="small mb-0"><q>{{$dr->comment}}</q></p>
+                            @endif
                         </li>
                         @endforeach
                     </ul>
@@ -64,6 +67,16 @@
                         <form action="{{route('documentroute.sendDocument',$document->id)}}" class="d-grid" method="post">@csrf <input type="submit" class="btn btn-primary" value="Send"></form>
                     </div>
                     @endif
+                    @endif
+                    @if($mydocroute->action == "Approve" && $myturn)
+                    <div class="border-top mt-2 pt-2">
+                        <p class="fw-bold mb-2">Approver options</p>
+                        <textarea id="txtapprovalcomment" cols="30" rows="2" placeholder="Approval or Rejection comment" class="form-control mb-2"></textarea>
+                        <div class="d-flex justify-content-evenly">
+                            <form action="{{route('documentroute.approveDocument')}}" class="d-inline-block" method="post">@csrf <input type="hidden" name="document_id" value="{{$document->id}}"><input type="hidden" name="action" value="Approved"><input type="hidden" id="txtCommentA" name="comment"><input type="submit" class="btn btn-primary" onclick="copyComment()" value="Approve"></form>
+                            <form action="{{route('documentroute.approveDocument')}}" class="d-inline-block" method="post">@csrf <input type="hidden" name="document_id" value="{{$document->id}}"><input type="hidden" name="action" value="Rejected"><input type="hidden" id="txtCommentB" name="comment"><input type="submit" class="btn btn-danger" onclick="copyComment()" value="Reject"></form>
+                        </div>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -99,7 +112,7 @@
                 <p class="small mb-0">Note: New recepients are added at the end of the list.</p>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline-danger me-auto" onclick="clearRecepientList()">Clear</button>
+                <button class="btn btn-outline-danger me-auto" onclick="clearRecepientList()">Clear selected</button>
                 <form action="{{route('documentroute.addRecepients')}}" method="post">@csrf <input type="hidden" id="txt_recepients" name="recepients"><input type="hidden" name="document_id" value="{{$document->id}}"><input type="submit" value="Add" class="btn btn-primary"></form>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearRecepientList()">Close</button>
             </div>
@@ -163,5 +176,11 @@
     function prepareToSend() {
         document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
     }
+    @if($mydocroute->action == "Approve" && $myturn)
+    function copyComment() {
+        document.getElementById('txtCommentA').value = document.getElementById('txtapprovalcomment').value;
+        document.getElementById('txtCommentB').value = document.getElementById('txtapprovalcomment').value;
+    }
+    @endif
 </script>
 @endsection

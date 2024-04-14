@@ -116,9 +116,14 @@ class DocumentController extends Controller
             return redirect('/receive/'.$id);
         }
         $docroute = DocumentRoute::where('document_id',$id)->get();
+        $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
+        $prevactedroute = DocumentRoute::whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
+        $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1);
         return view('document.view')
             ->with('document',$document)
-            ->with('docroute',$docroute);
+            ->with('docroute',$docroute)
+            ->with('mydocroute',$mydocroute)
+            ->with('myturn',$myturn);
     }
 
     /**

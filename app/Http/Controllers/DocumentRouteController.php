@@ -54,10 +54,13 @@ class DocumentRouteController extends Controller
         else {
             $docroute = DocumentRoute::where('document_id',$id)->get();
             $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
+            $prevactedroute = DocumentRoute::whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
+            $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1);
             return view('documentroute.receive')
                 ->with('document', $document)
                 ->with('docroute', $docroute)
-                ->with('mydocroute',$mydocroute);
+                ->with('mydocroute',$mydocroute)
+                ->with('myturn',$myturn);
         }
     }
 
@@ -100,6 +103,7 @@ class DocumentRouteController extends Controller
             $docroute->action_order = $action_order;
             $docroute->action = $r->action;
             if($r->action == 'Approve') {
+
                 $hasApproval = true;
             }
             if($r->action == 'Notify' && $hasApproval == false) {
@@ -118,10 +122,34 @@ class DocumentRouteController extends Controller
         $docroute = DocumentRoute::where('document_id',$id)->first();
         $docroute->action = "Sent";
         $docroute->sender_id = Auth::user()->id;
+        $docroute->acted_on = date("Y-m-d H:i:s");
         $docroute->sent_on = date("Y-m-d H:i:s");
         $docroute->update();
         return redirect('/document/'.$id)
             ->with('status','success')
             ->with('message','Document has been sent to recepients.');
+    }
+
+    public function approveDocument(Request $request) {
+        $mydocroute = DocumentRoute::where('document_id',$request->document_id)->where('user_id',Auth::user()->id)->first();
+        $comment = $request->comment;
+        $action = $request->action;
+        if($action == "Approved") {
+            $mydocroute->action = "Approved";
+            $mydocroute->acted_on = date("Y-m-d H:i:s");
+            $mydocroute->comment = $comment;
+            $mydocroute->update();
+            return redirect('/document/'.$request->document_id)
+            ->with('status','success')
+            ->with('message','Document has been approved.');
+        } else {
+            $mydocroute->action = "Rejected";
+            $mydocroute->acted_on = date("Y-m-d H:i:s");
+            $mydocroute->comment = $comment;
+            $mydocroute->update();
+            return redirect('/document/'.$request->document_id)
+            ->with('status','warning')
+            ->with('message','Document has been rejected.');
+        }       
     }
 }
