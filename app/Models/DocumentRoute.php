@@ -10,7 +10,7 @@ class DocumentRoute extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['document_id','office_id','user_id','received_on','sender_id','sent_on','comment'];
+    protected $fillable = ['document_id','office_id','user_id','received_on','action_order','action','acted_on','sender_id','sent_on','comment'];
 
     /**
      * NOTE: Apr 4
