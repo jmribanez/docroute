@@ -115,10 +115,12 @@ class DocumentController extends Controller
         if($document->user_id != Auth::user()->id && $docroute == null) {
             return redirect('/receive/'.$id);
         }
+        $myturn = null;
         $docroute = DocumentRoute::where('document_id',$id)->get();
         $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
         $prevactedroute = DocumentRoute::whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
-        $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1);
+        if($mydocroute != null && $prevactedroute != null)
+            $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1) && $prevactedroute->action != "Rejected";
         return view('document.view')
             ->with('document',$document)
             ->with('docroute',$docroute)

@@ -29,7 +29,7 @@ class DocumentRouteController extends Controller
         $docroute->user_id = Auth::user()->id;
         $docroute->received_on = date("Y-m-d H:i:s");
         $docroute->action_order = 1;
-        $docroute->action = "draft";
+        $docroute->action = "Draft";
         $docroute->save();
         return redirect('/document/'.$id)
             ->with('status','success')
@@ -47,7 +47,7 @@ class DocumentRouteController extends Controller
         // Check if the document has already been sent for routing (if there is already an entry for document_id)
         $docroute = DocumentRoute::where('document_id',$id)->get();
         if(count($docroute) == 0)
-            abort('403','Document has not been prepared or sent for routing.');
+            abort('403','Document has not been prepared for routing.');
         $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('received_on')->first(); 
         if($document->user->id == Auth::user()->id || $docroute != null)
             return redirect('/document/'.$id);
@@ -55,6 +55,7 @@ class DocumentRouteController extends Controller
             $docroute = DocumentRoute::where('document_id',$id)->get();
             $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
             $prevactedroute = DocumentRoute::whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
+            $prevactedroute??abort('403','Document has not been sent for routing.');
             $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1);
             return view('documentroute.receive')
                 ->with('document', $document)
@@ -139,6 +140,15 @@ class DocumentRouteController extends Controller
             $mydocroute->acted_on = date("Y-m-d H:i:s");
             $mydocroute->comment = $comment;
             $mydocroute->update();
+            // Give a date on notify action after this one.
+            $continueroute = DocumentRoute::where('document_id',$request->document_id)->whereNull('acted_on')->orderBy('action_order')->get();
+            foreach($continueroute as $cr) {
+                if($cr->action == "Approve")
+                    break;
+                $innerRoute = DocumentRoute::find($cr->id);
+                $innerRoute->acted_on = date("Y-m-d H:i:s");
+                $innerRoute->update();
+            }
             return redirect('/document/'.$request->document_id)
             ->with('status','success')
             ->with('message','Document has been approved.');

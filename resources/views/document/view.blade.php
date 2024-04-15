@@ -39,7 +39,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h3 class="mb-0">Routing</h3>
+                        @if($mydocroute != null)
                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#routingModal">Add</button>
+                        @endif
                     </div>
                     @if(count($docroute)==0)
                     <form action="{{route('documentroute.prepare',$document->id)}}" method="post" class="d-grid">
@@ -68,6 +70,7 @@
                     </div>
                     @endif
                     @endif
+                    @if($myturn != null && $mydocroute != null)
                     @if($mydocroute->action == "Approve" && $myturn)
                     <div class="border-top mt-2 pt-2">
                         <p class="fw-bold mb-2">Approver options</p>
@@ -77,6 +80,7 @@
                             <form action="{{route('documentroute.approveDocument')}}" class="d-inline-block" method="post">@csrf <input type="hidden" name="document_id" value="{{$document->id}}"><input type="hidden" name="action" value="Rejected"><input type="hidden" id="txtCommentB" name="comment"><input type="submit" class="btn btn-danger" onclick="copyComment()" value="Reject"></form>
                         </div>
                     </div>
+                    @endif
                     @endif
                 </div>
             </div>
@@ -176,11 +180,13 @@
     function prepareToSend() {
         document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
     }
+    @if($myturn != null && $mydocroute != null)
     @if($mydocroute->action == "Approve" && $myturn)
     function copyComment() {
         document.getElementById('txtCommentA').value = document.getElementById('txtapprovalcomment').value;
         document.getElementById('txtCommentB').value = document.getElementById('txtapprovalcomment').value;
     }
+    @endif
     @endif
 </script>
 @endsection

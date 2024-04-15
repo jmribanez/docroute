@@ -30,6 +30,9 @@
                         <li class="list-group-item">
                             <p class="fw-bold mb-0">{{$dr->user->name_first . " " . $dr->user->name_family}}</h5>
                             <p class="small mb-0">{{$dr->action}}</p>
+                            @if(!empty($dr->comment))
+                            <p class="small mb-0"><q>{{$dr->comment}}</q></p>
+                            @endif
                         </li>
                         @endforeach
                     </ul>
