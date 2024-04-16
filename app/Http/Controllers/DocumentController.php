@@ -118,7 +118,7 @@ class DocumentController extends Controller
         $myturn = null;
         $docroute = DocumentRoute::where('document_id',$id)->get();
         $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
-        $prevactedroute = DocumentRoute::whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
+        $prevactedroute = DocumentRoute::where('document_id',$id)->whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
         if($mydocroute != null && $prevactedroute != null)
             $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1) && $prevactedroute->action != "Rejected";
         return view('document.view')

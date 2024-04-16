@@ -54,7 +54,8 @@ class DocumentRouteController extends Controller
         else {
             $docroute = DocumentRoute::where('document_id',$id)->get();
             $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
-            $prevactedroute = DocumentRoute::whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
+            $prevactedroute = DocumentRoute::where('document_id',$id)->whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
+            $mydocroute??abort('403','You are not authorized to view the document.');
             $prevactedroute??abort('403','Document has not been sent for routing.');
             $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1);
             return view('documentroute.receive')

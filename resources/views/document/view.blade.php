@@ -56,10 +56,34 @@
                     <ul class="list-group list-group-flush">
                         @foreach ($docroute as $dr)
                         <li class="list-group-item">
-                            <p class="fw-bold mb-0">{{$dr->user->name_first . " " . $dr->user->name_family}}</p>
-                            <p class="small mb-0">{{$dr->action??'Not yet received'}}</p>
-                            @if(!empty($dr->comment))
-                            <p class="small mb-0"><q>{{$dr->comment}}</q></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="fw-semibold mb-0">{{$dr->user->name_first . " " . $dr->user->name_family}}</p>
+                                <div>
+                                    <p class="small mb-0">{!!($dr->received_on == null)?"<abbr title='Not yet received'><i class='bi bi-envelope-fill'></i></abbr>":"<abbr title='$dr->received_on'><i class='bi bi-envelope-paper'></i></abbr>"!!}</p>
+                                </div>
+                            </div>
+                            @if($dr->action == "Approve")
+                            <p class="small mb-0">For approval</p>
+                            @elseif(($dr->action == "Approved" || $dr->action == "Rejected") && $dr->acted_on != null)
+                            @if($dr->action=="Approved")
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="small mb-0 text-success"><abbr title='{{$dr->acted_on}}'><i class="bi bi-check-circle"></i></abbr> Approved</p>
+                                <div>
+                                    @if($dr->comment != null)
+                                    <abbr title="{{$dr->comment}}"><i class="bi bi-chat-right-text"></i></abbr>
+                                    @endif
+                                </div>
+                            </div>
+                            @else
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="small mb-0 text-danger"><abbr title='{{$dr->acted_on}}'><i class="bi bi-x-circle"></i></abbr> Rejected</p>
+                                <div>
+                                    @if($dr->comment != null)
+                                    <abbr title="{{$dr->comment}}"><i class="bi bi-chat-right-text"></i></abbr>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
                             @endif
                         </li>
                         @endforeach
