@@ -7,7 +7,7 @@
         <div class="col-sm-6">
             <div class="card mb-3">
                 <div class="card-body d-flex justify-content-between align-items-center">
-                    <h3>Documents</h3>
+                    <h3 class="mb-0">Documents</h3>
                     <div class="btn-group" role="group">
                         <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
                         <div class="btn-group" role="group">
@@ -19,8 +19,14 @@
                     </div>
                 </div>
                 <div class="p-3">
-                    @if(count($documents)>0)
+                    @if(count($documents)>0 || count($unread_documents)>0)
                     <ul class="list-group">
+                        @foreach ($unread_documents as $document)
+                        <a href="{{route('document.show',$document->document_id)}}" class="list-group-item list-group-item-action list-group-item-info">
+                            <h5 class="mb-0 mt-1">{{$document->title}}</h5>
+                            <p class="mb-1">Created by: {{$document->user->name_first . " " . $document->user->name_family . " on " . $document->created_at}}</p>
+                        </a>
+                        @endforeach
                         @foreach ($documents as $document)
                         <a href="{{route('document.show',$document->id)}}" class="list-group-item list-group-item-action">
                             <h5 class="mb-0 mt-1">{{$document->title}}</h5>
@@ -39,12 +45,15 @@
         <div class="col-sm-6">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h3>Routing</h3>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h3>Approvals</h3>
+                    <h3 class="mb-3">Approvals</h3>
+                    <div class="p-3">
+                        @if (count($approvals)>0)
+                        @else
+                        <div class="alert alert-secondary" role="alert">
+                            There are no documents for approval.
+                        </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
