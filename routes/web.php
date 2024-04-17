@@ -37,4 +37,5 @@ Route::post('/prepare/{id}', [DocumentRouteController::class, 'prepare'])->name(
 Route::post('/addRecepients', [DocumentRouteController::class, 'addRecepients'])->name('documentroute.addRecepients');
 Route::post('/sendDocument/{id}', [DocumentRouteController::class, 'sendDocument'])->name('documentroute.sendDocument');
 Route::post('/approveDocument', [DocumentRouteController::class, 'approveDocument'])->name('documentroute.approveDocument');
+Route::post('/resetRoute/{id}', [DocumentRouteController::class, 'resetRoute'])->name('documentRoute.resetRoute');
 Route::get('/findUser/{searchname}',[UserController::class, 'ajax_findUser'])->name('user.find');

@@ -34,9 +34,9 @@ class DocumentController extends Controller
          * You get the idea.
          */
         $showAll = $request->all=='1'?true:false;
-        $shared_documents = DocumentRoute::select('documents.*')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('received_on')->join('documents','documents.id','=','document_routes.document_id');
+        $shared_documents = DocumentRoute::select('documents.*')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNotNull('received_on')->join('documents','documents.id','=','document_routes.document_id');
         $documents = Document::where('user_id',Auth::user()->id)->union($shared_documents)->get();
-        $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
+        $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
         
         if($showAll && Auth::user()->can('list all documents'))
             $documents = Document::all();
@@ -109,23 +109,25 @@ class DocumentController extends Controller
     {
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
-        // Check if document is being opened by owner or someone who has already viewed it.
-        // If it has not yet been opened by the guest, redirect to receive/doc_id
-        $docroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('received_on')->first(); 
-        if($document->user_id != Auth::user()->id && $docroute == null) {
+        // Check if document is being opened by owner
+        // Recepient needs to have sent_on and received_on to view document
+        $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNotNull('received_on')->first(); 
+        if($document->user_id != Auth::user()->id && $mydocroute == null) {
             return redirect('/receive/'.$id);
         }
-        $myturn = null;
+
         $docroute = DocumentRoute::where('document_id',$id)->get();
-        $mydocroute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->first();
-        $prevactedroute = DocumentRoute::where('document_id',$id)->whereNotNull('acted_on')->orderBy('action_order','DESC')->first();
-        if($mydocroute != null && $prevactedroute != null)
-            $myturn = intval($mydocroute->action_order) == (intval($prevactedroute->action_order)+1) && $prevactedroute->action != "Rejected";
+        $rejects = DocumentRoute::where('document_id',$id)->where('action','Rejected')->get();
+        $hasreject = count($rejects)>0;
+        $myturn = false;
+        if($mydocroute != null)
+            $myturn = $mydocroute->action == "Approve";
         return view('document.view')
             ->with('document',$document)
             ->with('docroute',$docroute)
             ->with('mydocroute',$mydocroute)
-            ->with('myturn',$myturn);
+            ->with('myturn',$myturn)
+            ->with('hasreject',$hasreject);
     }
 
     /**
@@ -139,7 +141,7 @@ class DocumentController extends Controller
         if(count($docroute)>0)
             return redirect('document/'.$id)
                 ->with('status','info')
-                ->with('message','Routed documents are no longer editable.');
+                ->with('message','Prepared documents are no longer editable.');
         return view('document.edit')
             ->with('document',$document);
     }

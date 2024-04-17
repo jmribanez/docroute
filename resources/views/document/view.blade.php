@@ -39,7 +39,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h3 class="mb-0">Routing</h3>
-                        @if($mydocroute != null)
+                        @if(count($docroute)>0)
                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#routingModal">Add</button>
                         @endif
                     </div>
@@ -93,9 +93,14 @@
                         <form action="{{route('documentroute.sendDocument',$document->id)}}" class="d-grid" method="post">@csrf <input type="submit" class="btn btn-primary" value="Send"></form>
                     </div>
                     @endif
+                    @if($hasreject)
+                    <div class="d-grid mt-3">
+                        <form action="{{route('documentRoute.resetRoute',$document->id)}}" class="d-grid" method="post">@csrf <input type="submit" class="btn btn-secondary" value="Reset"></form>
+                        <p class="small">Resetting the route will unsend the document from recepients.</p>
+                    </div>
                     @endif
-                    @if($myturn != null && $mydocroute != null)
-                    @if($mydocroute->action == "Approve" && $myturn)
+                    @endif
+                    @if($myturn)
                     <div class="border-top mt-2 pt-2">
                         <p class="fw-bold mb-2">Approver options</p>
                         <textarea id="txtapprovalcomment" cols="30" rows="2" placeholder="Approval or Rejection comment" class="form-control mb-2"></textarea>
@@ -104,7 +109,6 @@
                             <form action="{{route('documentroute.approveDocument')}}" class="d-inline-block" method="post">@csrf <input type="hidden" name="document_id" value="{{$document->id}}"><input type="hidden" name="action" value="Rejected"><input type="hidden" id="txtCommentB" name="comment"><input type="submit" class="btn btn-danger" onclick="copyComment()" value="Reject"></form>
                         </div>
                     </div>
-                    @endif
                     @endif
                 </div>
             </div>
@@ -204,13 +208,11 @@
     function prepareToSend() {
         document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
     }
-    @if($myturn != null && $mydocroute != null)
-    @if($mydocroute->action == "Approve" && $myturn)
+    @if($myturn)
     function copyComment() {
         document.getElementById('txtCommentA').value = document.getElementById('txtapprovalcomment').value;
         document.getElementById('txtCommentB').value = document.getElementById('txtapprovalcomment').value;
     }
-    @endif
     @endif
 </script>
 @endsection
