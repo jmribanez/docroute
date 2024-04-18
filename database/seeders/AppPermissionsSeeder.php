@@ -226,7 +226,7 @@ class AppPermissionsSeeder extends Seeder
             'name_family' => 'Bundalian',
             'name_first' => 'Rina',
             'email' => 'rina@mail.com',
-            'office_id' => 6,
+            'office_id' => 7,
             'password' => Hash::make('abc.123')
         ]);
 
