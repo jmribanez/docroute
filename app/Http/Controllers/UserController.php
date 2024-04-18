@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -51,6 +52,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $length = 6;
         if(!Auth::user()->can('create user')) {
             abort(403);
         }
@@ -60,6 +62,17 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->office_id = $request->office;
         $user->password = Hash::make($request->password);
+        if($request->hasFile('user_photo')) {
+            $allowedFileExtension = ['jpg','jpeg','png'];
+            $file = $request->file('user_photo');
+            $extension = $file->getClientOriginalExtension();
+            $check = in_array($extension, $allowedFileExtension);
+            if($check) {
+                $newFileName = substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
+                $file->storeAs('user_photos',$newFileName . "." . $extension);
+                $user->user_photo_url = $newFileName . "." . $extension;
+            }
+        }
         $user->save();
         $user->assignRole('Standard');
         return redirect('/user')
@@ -99,6 +112,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $length = 6;
         if(!Auth::user()->can('edit user')) {
             abort(403);
         }
@@ -121,6 +135,19 @@ class UserController extends Controller
         $user->name_first = $request->name_first;
         $user->email = $request->email;
         $user->office_id = $request->office;
+        if($request->hasFile('user_photo')) {
+            $allowedFileExtension = ['jpg','jpeg','png'];
+            $file = $request->file('user_photo');
+            $extension = $file->getClientOriginalExtension();
+            $check = in_array($extension, $allowedFileExtension);
+            if($check) {
+                // Remove old photo
+                Storage::delete('user_photos/'.$user->user_photo_url);
+                $newFileName = substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
+                $file->storeAs('user_photos',$newFileName . "." . $extension);
+                $user->user_photo_url = $newFileName . "." . $extension;
+            }
+        }
         $user->update();
         return redirect('/user')
             ->with('status','success')

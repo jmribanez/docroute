@@ -10,16 +10,16 @@
                     <div class="row">
                         <div class="col-sm-4 mb-3">
                             <h3 class="mb-3">Photo</h3>
-                            <img src="{{Storage::url('static/images/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
-                            <div class="mt-3">
-                                <label for="file_userphoto" class="form-label">Upload a new photo</label>
-                                <input class="form-control" type="file" id="file_userphoto">
-                            </div>
+                            <img src="{{($user->user_photo_url!=null)?asset('storage/user_photos/'.$user->user_photo_url):Storage::url('static/images/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
                         </div>
                         <div class="col-sm-8 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h3>Details</h3>
-                                <a href="{{route('user.edit',$user->id)}}" type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i> Edit</a>
+                                <div>
+                                    @can('edit user')
+                                    <a href="{{route('user.edit',$user->id)}}" type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-fill"></i> Edit</a>
+                                    @endcan
+                                </div>
                             </div>
                             <div class="row g-3 align-items-center mb-3">
                                 <div class="col-sm-3"><p>Family Name:</p></div>

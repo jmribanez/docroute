@@ -6,17 +6,17 @@
     <h1 class="mb-3">{{$user->name_family . ", " . $user->name_first}}</h1>
     <div class="row">
         <div class="col-sm-9 mb-3">
-            <form class="card" action="{{route('user.update',$user->id)}}" method="POST">
+            <form class="card" action="{{route('user.update',$user->id)}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
                 <div class="card-body">
                     <div class="row g-4">
                         <div class="col-sm-4 mb-3">
                             <h3 class="mb-3">Photo</h3>
-                            <img src="{{Storage::url('static/images/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
+                            <img src="{{($user->user_photo_url!=null)?asset('storage/user_photos/'.$user->user_photo_url):Storage::url('static/images/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
                             <div class="mt-3">
                                 <label for="file_userphoto" class="form-label">Upload a new photo</label>
-                                <input class="form-control" type="file" id="file_userphoto">
+                                <input class="form-control" type="file" id="file_userphoto" name="user_photo">
                             </div>
                         </div>
                         <div class="col-sm-8 mb-3">
@@ -84,12 +84,7 @@
                     <div class="d-grid gap-2 mb-3">
                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalReset">Reset password</button>
                         <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">Delete account</button>
-                    </div>
-                    <hr>
-                    <div>
-                        <p>Last Login: March 7, 2024 7:45 PM</p>    
-                        <p>First Login: March 5, 2024 10:22 AM</p>
-                    </div>    
+                    </div>  
                 </div>
             </form>
         </div>

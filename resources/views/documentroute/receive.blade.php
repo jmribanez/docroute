@@ -21,7 +21,7 @@
                         @foreach ($docroute as $dr)
                         <li class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
-                                <p class="fw-semibold mb-0">{{$dr->user->name_first . " " . $dr->user->name_family}}</p>
+                                <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
                                 <div>
                                     <p class="small mb-0">{!!($dr->received_on == null)?"<abbr title='Not yet received'><i class='bi bi-envelope-fill'></i></abbr>":"<abbr title='$dr->received_on'><i class='bi bi-envelope-paper'></i></abbr>"!!}</p>
                                 </div>
