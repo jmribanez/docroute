@@ -4,6 +4,7 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteBase /drs/
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -19,5 +20,4 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 
-    RewriteBase /drs/
 </IfModule>
