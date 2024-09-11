@@ -18,11 +18,25 @@
                 <input type="text" name="title" id="txt_title" class="form-control form-control-lg" placeholder="Title" required>
                 <div class="d-flex justify-content-between align-items-center">
                     <button type="submit" class="btn btn-lg btn-primary ms-3 d-inline-block">Save</button>
-                    <a href="{{route('document.index')}}" type="button" class="btn btn-lg btn-outline-secondary ms-3">Cancel</a>
+                    <a href="{{route('home')}}" type="button" class="btn btn-lg btn-outline-secondary ms-3">Cancel</a>
                 </div>
             </div>
             <div class="mb-3">
                 <textarea name="description" id="txt_description" cols="30" rows="10" class="form-control">{{$textareacontent??''}}</textarea>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="txtDocType" class="form-label">Document Type</label>
+                    <select name="document_type" id="txtDocType" class="form-select">
+                        <option value="Internal">Internal</option>
+                        <option value="Incoming">Incoming</option>
+                        <option value="Outgoing">Outgoing</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="txtExternalParty" class="form-label">External Party</label>
+                    <input type="text" name="external_party" id="txtExternalParty" class="form-control">
+                </div>
             </div>
             <div class="mb-3">
                 <label for="inputfile_attachments">File Attachments</label>

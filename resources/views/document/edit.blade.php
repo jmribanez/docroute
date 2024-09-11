@@ -25,6 +25,20 @@
             <div class="mb-3">
                 <textarea name="description" id="txt_description" cols="30" rows="10" class="form-control">{!! $document->description !!}</textarea>
             </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="txtDocType" class="form-label">Document Type</label>
+                    <select name="document_type" id="txtDocType" class="form-select" value="{{$document->document_type}}">
+                        <option value="Internal" {{($document->document_type=='Internal')?'selected':'';}}>Internal</option>
+                        <option value="Incoming" {{($document->document_type=='Incoming')?'selected':'';}}>Incoming</option>
+                        <option value="Outgoing" {{($document->document_type=='Outgoing')?'selected':'';}}>Outgoing</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="txtExternalParty" class="form-label">External Party</label>
+                    <input type="text" name="external_party" id="txtExternalParty" class="form-control">
+                </div>
+            </div>
             <div class="mb-3">
                 <label for="inputfile_attachments">Add File Attachments</label>
                 <input type="file" name="file_attachments[]" id="inputfile_attachments" class="form-control" multiple>

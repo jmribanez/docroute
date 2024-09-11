@@ -8,7 +8,7 @@
             <h1>{{$document->title}}</h1>
         </div>
         <div>
-            @if(count($docroute)==0)
+            @if($userCanEdit)
             <a href="{{route('document.edit',$document->id)}}" class="btn btn-outline-secondary">Edit</a>
             @endif
         </div>
@@ -16,18 +16,29 @@
     <div class="row">
         <div class="col-md-9 mb-3">
             <div class="card">
-                <div class="card-body mt-3 p-3">
-                    {!!$document->description!!}
-                </div>
-                @if (count($document->attachments)>0)
-                <div class="card-body border-top p-3">
-                    <h5>Attachments</h5>
-                    <div class="list-group">
-                        @foreach ($document->attachments as $attachment)
-                            <a href="{{asset('storage/attachments/'.$attachment->url)}}" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
-                        @endforeach
+                @if($isUserInRoute)
+                    <div class="card-body p-3">
+                        {!!$document->description!!}
                     </div>
-                </div>
+                    @if (count($document->attachments)>0)
+                    <div class="card-body border-top p-3">
+                        <h5>Attachments</h5>
+                        <div class="list-group">
+                            @foreach ($document->attachments as $attachment)
+                                <a href="{{asset('storage/attachments/'.$attachment->url)}}" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                @else
+                    <div class="card-body p-3">
+                        <p>You must receive the document first before being able to read the contents.</p>
+                        <form action="{{route('documentroute.confirm',$document->id)}}" method="post">
+                            @csrf
+                            <p class="small">By clicking the Receive button, I confirm that I have the physical documents with me.</p>
+                            <input type="submit" value="Receive" class="btn btn-primary">
+                        </form>
+                    </div>
                 @endif
                 <div class="card-footer p-3">
                     <p class="mb-0">Created by: {{$document->user->name_first . " " .$document->user->name_family . " (" . $document->user->office->office_name . ")" . " on " . $document->created_at}}</p>
@@ -37,120 +48,25 @@
         <div class="col-md-3 mb-3">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="mb-1">
                         <h3 class="mb-0">Routing</h3>
-                        @if(count($docroute)>0)
-                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#routingModal">Add</button>
-                        @endif
                     </div>
-                    @if(count($docroute)==0)
-                    <form action="{{route('documentroute.prepare',$document->id)}}" method="post" class="d-grid">
-                    @csrf
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="d-block bi bi-exclamation-circle text-danger fs-5 me-2"></i>
-                        <p class="mb-0">Preparing a document for routing will disable editing.</p>
-                    </div>
-                    <input type="submit" class="btn btn-primary" value="Prepare">
-                    </form>
-                    @else
                     <ul class="list-group list-group-flush">
-                        @foreach ($docroute as $dr)
+                        @foreach ($document->routes as $dr)
                         <li class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
-                                <div>
-                                    <p class="small mb-0">{!!($dr->received_on == null)?"<abbr title='Not yet received'><i class='bi bi-envelope-fill'></i></abbr>":"<abbr title='$dr->received_on'><i class='bi bi-envelope-paper'></i></abbr>"!!}</p>
-                                </div>
+                            <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
+                            <div>
+                                <p class="small mb-0">{{$dr->state}} on {{$dr->routed_on}}</p>
                             </div>
-                            @if($dr->action == "Approve")
-                            <p class="small mb-0">For approval</p>
-                            @elseif(($dr->action == "Approved" || $dr->action == "Rejected") && $dr->acted_on != null)
-                            @if($dr->action=="Approved")
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="small mb-0 text-success"><abbr title='{{$dr->acted_on}}'><i class="bi bi-check-circle"></i></abbr> Approved</p>
-                                <div>
-                                    @if($dr->comment != null)
-                                    <abbr title="{{$dr->comment}}"><i class="bi bi-chat-right-text"></i></abbr>
-                                    @endif
-                                </div>
-                            </div>
-                            @else
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="small mb-0 text-danger"><abbr title='{{$dr->acted_on}}'><i class="bi bi-x-circle"></i></abbr> Rejected</p>
-                                <div>
-                                    @if($dr->comment != null)
-                                    <abbr title="{{$dr->comment}}"><i class="bi bi-chat-right-text"></i></abbr>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
-                            @endif
                         </li>
                         @endforeach
                     </ul>
-                    @if($docroute[0]->sent_on == null)
-                    <div class="d-grid mt-3">
-                        <form action="{{route('documentroute.sendDocument',$document->id)}}" class="d-grid" method="post">@csrf <input type="submit" class="btn btn-primary" value="Send"></form>
-                    </div>
-                    @endif
-                    @if($hasreject)
-                    <div class="d-grid mt-3">
-                        <form action="{{route('documentRoute.resetRoute',$document->id)}}" class="d-grid" method="post">@csrf <input type="submit" class="btn btn-secondary" value="Reset"></form>
-                        <p class="small">Resetting the route will unsend the document from recepients.</p>
-                    </div>
-                    @endif
-                    @endif
-                    @if($myturn)
-                    <div class="border-top mt-2 pt-2">
-                        <p class="fw-bold mb-2">Approver options</p>
-                        <textarea id="txtapprovalcomment" cols="30" rows="2" placeholder="Approval or Rejection comment" class="form-control mb-2"></textarea>
-                        <div class="d-flex justify-content-evenly">
-                            <form action="{{route('documentroute.approveDocument')}}" class="d-inline-block" method="post">@csrf <input type="hidden" name="document_id" value="{{$document->id}}"><input type="hidden" name="action" value="Approved"><input type="hidden" id="txtCommentA" name="comment"><input type="submit" class="btn btn-primary" onclick="copyComment()" value="Approve"></form>
-                            <form action="{{route('documentroute.approveDocument')}}" class="d-inline-block" method="post">@csrf <input type="hidden" name="document_id" value="{{$document->id}}"><input type="hidden" name="action" value="Rejected"><input type="hidden" id="txtCommentB" name="comment"><input type="submit" class="btn btn-danger" onclick="copyComment()" value="Reject"></form>
-                        </div>
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="routingModal" tabindex="-1" aria-labelledby="routingModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Add recepients</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="input-group mb-3">
-                    <input type="text" id="searchname" class="form-control" placeholder="Find by name" aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="findByName()">Search</button>
-                </div>
-                <div class="mb-3">
-                    <span class="d-inlineblock pe-2">Action:</span>
-                    <input type="radio" class="btn-check" name="optAction" id="optNotify" autocomplete="off" checked>
-                    <label class="btn" for="optNotify">Notify</label>
-                    <input type="radio" class="btn-check" name="optAction" id="optApprove" autocomplete="off">
-                    <label class="btn" for="optApprove">Approve</label>
-                </div>
-                <div class="list-group mb-3" id="search_list">
-                    <div class="list-group-item disabled"><em>Empty</em></div>
-                </div>
-                <p class="mb-1"><strong>Selected Recepients</strong></p>
-                <div class="list-group mb-3" id="recepient_list">
-                    <div class="list-group-item disabled"><em>Empty</em></div>
-                </div>
-                <p class="small mb-0">Note: New recepients are added at the end of the list.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline-danger me-auto" onclick="clearRecepientList()">Clear selected</button>
-                <form action="{{route('documentroute.addRecepients')}}" method="post">@csrf <input type="hidden" id="txt_recepients" name="recepients"><input type="hidden" name="document_id" value="{{$document->id}}"><input type="submit" value="Add" class="btn btn-primary"></form>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearRecepientList()">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     var userList = [];
@@ -208,11 +124,5 @@
     function prepareToSend() {
         document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
     }
-    @if($myturn)
-    function copyComment() {
-        document.getElementById('txtCommentA').value = document.getElementById('txtapprovalcomment').value;
-        document.getElementById('txtCommentB').value = document.getElementById('txtapprovalcomment').value;
-    }
-    @endif
 </script>
 @endsection

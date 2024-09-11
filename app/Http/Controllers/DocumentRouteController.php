@@ -20,6 +20,10 @@ class DocumentRouteController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * NOTE: Sep 11
+     * This function will no longer be used.
+     */
     public function prepare(string $id) {
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
@@ -60,7 +64,12 @@ class DocumentRouteController extends Controller
             ->with('myturn',$myturn);
     }
 
+    /**
+     * NOTE: Sep 11
+     * This function will no longer be used.
+     */
     public function confirm(string $id) {
+        /*
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
         // $docroute = DocumentRoute::where('document_id',$id)->first();
@@ -74,8 +83,25 @@ class DocumentRouteController extends Controller
         return redirect('/document/'.$id)
             ->with('status','success')
             ->with('message','The document has been received.');
+        */
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        $docroute = new DocumentRoute;
+        $docroute->document_id = $id;
+        $docroute->office_id = Auth::user()->office_id;
+        $docroute->user_id = Auth::user()->id;
+        $docroute->routed_on = date("Y-m-d H:i:s");
+        $docroute->state = "Received";
+        $docroute->save();
+        return redirect('/document/'.$id)
+            ->with('status','success')
+            ->with('message','Document has been received.');
     }
 
+    /**
+     * NOTE: Sep 11, 2024
+     * This function will no longer be used.
+     */
     public function addRecepients(Request $request) {
         $document_id = $request->document_id;
         $recepients = json_decode($request->recepients);
@@ -116,6 +142,10 @@ class DocumentRouteController extends Controller
             ->with('message','Recepients have been added.');
     }
 
+    /**
+     * NOTE: Sep 11, 2024
+     * This function will no longer be used.
+     */
     public function sendDocument(string $id) {
         $docroute = DocumentRoute::where('document_id',$id)->orderBy('action_order')->first();
         $docroute->action = "Sent";
@@ -135,6 +165,10 @@ class DocumentRouteController extends Controller
             ->with('message','Document has been sent to recepients.');
     }
 
+    /**
+     * NOTE: Sep 11, 2024
+     * This function will no longer be used.
+     */
     public function approveDocument(Request $request) {
         $mydocroute = DocumentRoute::where('document_id',$request->document_id)->where('user_id',Auth::user()->id)->whereNotNull('sent_on')->first();
         $comment = $request->comment;
@@ -168,6 +202,10 @@ class DocumentRouteController extends Controller
         }       
     }
 
+    /**
+     * NOTE: Sep 11, 2024
+     * This function will no longer be used.
+     */
     public function resetRoute(string $id) {
         $docroutes = DocumentRoute::where('document_id',$id)->get();
         foreach($docroutes as $dr) {

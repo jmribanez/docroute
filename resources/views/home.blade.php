@@ -20,14 +20,8 @@
                         </div>
                     </div>
                     <div class="p-3">
-                        @if(count($documents)>0 || count($unread_documents)>0)
+                        @if(count($documents)>0)
                         <ul class="list-group">
-                            @foreach ($unread_documents as $document)
-                            <a href="{{route('document.show',$document->document_id)}}" class="list-group-item list-group-item-action list-group-item-info">
-                                <h5 class="mb-0 mt-1">{{$document->title}}</h5>
-                                <p class="mb-1">Created by: {{$document->user->name_first . " " . $document->user->name_family . " on " . $document->created_at}}</p>
-                            </a>
-                            @endforeach
                             @foreach ($documents as $document)
                             <a href="{{route('document.show',$document->id)}}" class="list-group-item list-group-item-action">
                                 <h5 class="mb-0 mt-1">{{$document->title}}</h5>
@@ -49,20 +43,7 @@
                 <div class="card-body">
                     <h3 class="mb-3">Approvals</h3>
                     <div class="p-3">
-                        @if (count($approvals)>0)
-                        <ul class="list-group">
-                        @foreach ($approvals as $document)
-                        <a href="{{route('document.show',$document->document_id)}}" class="list-group-item list-group-item-action list-group-item-info">
-                            <h5 class="mb-0 mt-1">{{$document->title}}</h5>
-                            <p class="mb-1">Created by: {{$document->user->name_first . " " . $document->user->name_family . " on " . $document->created_at}}</p>
-                        </a>
-                        @endforeach
-                        </ul>
-                        @else
-                        <div class="alert alert-secondary" role="alert">
-                            There are no documents for approval.
-                        </div>
-                        @endif
+                        
                     </div>
                 </div>
             </div>

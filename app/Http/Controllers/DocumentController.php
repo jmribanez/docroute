@@ -21,7 +21,8 @@ class DocumentController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
+        // 9/11: Commented as the edit must be viewable publicly if and only if external_party is not null
     }
 
     /**
@@ -29,20 +30,21 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
+        $this->middleware('auth');
         /**
          * Note: Have a can('see-own-docs') and can('see-all-docs')
          * You get the idea.
          */
         $showAll = $request->all=='1'?true:false;
-        $shared_documents = DocumentRoute::select('documents.*')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNotNull('received_on')->join('documents','documents.id','=','document_routes.document_id');
-        $documents = Document::where('user_id',Auth::user()->id)->union($shared_documents)->get();
-        $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
+        //$shared_documents = null; /* TODO: Update this with documents that don't belong to you but you are in the route. */
+        $user = Auth::user();
+        $documents = DocumentRoute::where('user_id',$user->id)->get();
+        // $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
         
         if($showAll && Auth::user()->can('list all documents'))
-            $documents = Document::all();
+            $documents = DocumentRoute::all()->unique('document_id');
         return view('document.index')
             ->with('documents',$documents)
-            ->with('unread_documents',$unread_documents)
             ->with('showAll',$showAll);
     }
 
@@ -51,6 +53,8 @@ class DocumentController extends Controller
      */
     public function create(Request $request)
     {
+        $this->middleware('auth');
+
         $textareacontent = null;
         if($request->t != null) {
             $template = Template::find($request->t);
@@ -61,17 +65,34 @@ class DocumentController extends Controller
             ->with('textareacontent',$textareacontent);
     }
 
+    private function generateRandomString($length = 6) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters_length = strlen($characters);
+        $random_string = '';
+
+        // Generate random characters until the string reaches desired length
+        for ($i = 0; $i < $length; $i++) {
+            $random_index = random_int(0, $characters_length - 1);
+            $random_string .= $characters[$random_index];
+        }
+        return $random_string;
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        $this->middleware('auth');
         $length = 6;
         $document = new Document;
-        $document->id = substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
+        $document->id = $this->generateRandomString(6);
         $document->title = $request->title;
         $document->description = $request->description;
         $document->user_id = Auth::user()->id;
+        // 9/11: Added the following 2 lines based on updated specifications
+        $document->document_type = $request->document_type??'Internal';
+        $document->external_party = empty(trim($request->external_party))?null:$request->external_party;
         $document->save();
 
         // check if it has attachments.
@@ -84,7 +105,7 @@ class DocumentController extends Controller
                 
                 $check = in_array($extension, $allowedFileExtension);
                 if($check) {
-                    $newFileName = $document->id . "_" . substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
+                    $newFileName = $document->id . "_" . $this->generateRandomString(6);
                     $document->attachments()->create([
                         'orig_filename' => $filename,
                         'url' => $newFileName . "." . $extension
@@ -94,8 +115,14 @@ class DocumentController extends Controller
             }
         }
         
-        // create a document route, place it as the office of the user
-        // create a document approval route, use JavaScript to create a JSON object
+        // create a document route, with the office_id as the present office_id of the user
+        $documentRoute = new DocumentRoute();
+        $documentRoute->document_id = $document->id;
+        $documentRoute->office_id = Auth::user()->office_id;
+        $documentRoute->user_id = Auth::user()->id;
+        $documentRoute->routed_on = date("Y-m-d H:i:s");
+        $documentRoute->state = 'Created';
+        $documentRoute->save();
 
         return redirect('/document/'.$document->id)
             ->with('status','success')
@@ -107,6 +134,12 @@ class DocumentController extends Controller
      */
     public function show(string $id)
     {
+        /**
+         * NOTE: September 11, 2024
+         * Old Code. Needs replacement based on feedback.
+         * 
+         */
+        /* Replaced as of September 11
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
         // Check if document is being opened by owner
@@ -128,6 +161,25 @@ class DocumentController extends Controller
             ->with('mydocroute',$mydocroute)
             ->with('myturn',$myturn)
             ->with('hasreject',$hasreject);
+        */
+
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        // check if user is in route
+        // check if user can edit. Rule is current user only except when state is 'released'
+        if(Auth::guest()) {
+            $isUserInRoute = false;
+            $userCanEdit = false;
+        } else {
+            $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
+            $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
+        }
+        
+        return view('document.view')
+            ->with('document',$document)
+            ->with('isUserInRoute',$isUserInRoute)
+            ->with('userCanEdit',$userCanEdit);
+
     }
 
     /**
@@ -135,6 +187,13 @@ class DocumentController extends Controller
      */
     public function edit(string $id)
     {
+        $this->middleware('auth');
+        /**
+         * NOTE: Sept 11, 2024
+         * This is old complicated code.
+         */
+        /*
+        $this->middleware('auth');
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
         $docroute = DocumentRoute::where('document_id',$id)->get();
@@ -144,6 +203,19 @@ class DocumentController extends Controller
                 ->with('message','Prepared documents are no longer editable.');
         return view('document.edit')
             ->with('document',$document);
+        */
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        // check if user is in route
+        // check if user can edit. Rule is current user only except when state is 'released'
+        $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
+        if(!$isUserInRoute)
+            return redirect()->route('document.show',$id);
+            $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
+        return view('document.edit')
+            ->with('document',$document)
+            ->with('isUserInRoute',$isUserInRoute)
+            ->with('userCanEdit',$userCanEdit);
     }
 
     /**
@@ -151,11 +223,15 @@ class DocumentController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $this->middleware('auth');
+
         $length = 6;
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
         $document->title = $request->title;
         $document->description = $request->description;
+        $document->document_type = $request->document_type;
+        $document->external_party = empty(trim($request->external_party))?null:$request->external_party;
         $document->update();
 
         // check if it has attachments.
@@ -168,7 +244,7 @@ class DocumentController extends Controller
                 
                 $check = in_array($extension, $allowedFileExtension);
                 if($check) {
-                    $newFileName = $document->id . "_" . substr(bin2hex(random_bytes(ceil($length/2))),0,$length);
+                    $newFileName = $document->id . "_" . $this->generateRandomString(6);
                     $document->attachments()->create([
                         'orig_filename' => $filename,
                         'url' => $newFileName . "." . $extension
@@ -188,6 +264,7 @@ class DocumentController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
+        $this->middleware('auth');
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
         $attachments = $document->attachments;

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->foreignId('user_id');
+            $table->string('document_type');
+            $table->string('external_party')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

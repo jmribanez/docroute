@@ -16,12 +16,13 @@ return new class extends Migration
             $table->string('document_id');
             $table->foreignId('office_id');
             $table->foreignId('user_id');
-            $table->dateTime('received_on')->nullable();
-            $table->integer('action_order');
-            $table->string('action');
-            $table->dateTime('acted_on')->nullable();
-            $table->foreignId('sender_id')->nullable();
-            $table->dateTime('sent_on')->nullable();
+            $table->dateTime('routed_on'); // from received_on
+            $table->string('state');
+            // $table->integer('action_order');
+            $table->string('action')->nullable();
+            // $table->dateTime('acted_on')->nullable();
+            // $table->foreignId('sender_id')->nullable();
+            // $table->dateTime('sent_on')->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();
         });
