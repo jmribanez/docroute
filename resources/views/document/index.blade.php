@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Documents</h1>
-        <div>
+<div class="container-fluid">
+    <div class="row">
+        {{-- 1st Panel Navigation --}}
+        <div class="col-md-2 d-flex flex-column">
             <div class="btn-group" role="group">
                 <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
                 <div class="btn-group" role="group">
@@ -16,27 +16,49 @@
             </div>
             @can('list all documents')
             @if(!$showAll)
-            <a href="?all=1" class="btn btn-outline-secondary ms-1">Show All</a>
+            <a href="?all=1" class="btn btn-outline-secondary mt-3">Show All</a>
             @else
-            <a href="{{route('document.index')}}" class="btn btn-outline-secondary ms-1">Show Mine</a>
+            <a href="{{route('document.index')}}" class="btn btn-outline-secondary mt-3">Show Mine</a>
             @endif
             @endcan
         </div>
+        {{-- 2nd Panel Index --}}
+        <div class="col-md-4">
+            @if(count($documents)>0)
+            <ul class="list-group">
+                @foreach ($documents as $document)
+                <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-0 mt-1">{{$document->document->title}}</h5>
+                    <p class="mb-1">Created by: {{$document->document->user->name_first . " " . $document->document->user->name_family . " on " . $document->document->created_at}}</p>
+                </a>
+                @endforeach
+            </ul>
+            @else
+            <div class="alert alert-secondary" role="alert">
+                There are no documents.
+            </div>
+            @endif
+        </div>
+        {{-- 3rd Panel Details --}}
+        <div class="col-md-6 d-flex flex-column">
+            <div class="flex-grow-1 border rounded p-3">
+                @include('inc.message')
+                @switch($mode)
+                    @case('index')
+                        <x-document.noselection />
+                        @break
+                    @case('create')
+                        <x-document.create />
+                        @break
+                    @case('show')
+                        <x-document.show :document="$selectedDocument" :isUserInRoute="$isUserInRoute" :userCanEdit="$userCanEdit" />
+                        @break
+                    @default
+                        
+                @endswitch
+            </div>
+        </div>
     </div>
-    @include('inc.message')
-    @if(count($documents)>0)
-    <ul class="list-group">
-        @foreach ($documents as $document)
-        <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action">
-            <h5 class="mb-0 mt-1">{{$document->document->title}}</h5>
-            <p class="mb-1">Created by: {{$document->document->user->name_first . " " . $document->document->user->name_family . " on " . $document->document->created_at}}</p>
-        </a>
-        @endforeach
-    </ul>
-    @else
-    <div class="alert alert-secondary" role="alert">
-        There are no documents.
-    </div>
-    @endif
+    
 </div>
 @endsection

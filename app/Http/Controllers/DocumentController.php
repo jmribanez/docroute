@@ -45,7 +45,8 @@ class DocumentController extends Controller
             $documents = DocumentRoute::all()->unique('document_id');
         return view('document.index')
             ->with('documents',$documents)
-            ->with('showAll',$showAll);
+            ->with('showAll',$showAll)
+            ->with('mode','index');
     }
 
     /**
@@ -54,7 +55,11 @@ class DocumentController extends Controller
     public function create(Request $request)
     {
         $this->middleware('auth');
-
+        $showAll = $request->all=='1'?true:false;
+        $user = Auth::user();
+        $documents = DocumentRoute::where('user_id',$user->id)->get();
+        if($showAll && Auth::user()->can('list all documents'))
+            $documents = DocumentRoute::all()->unique('document_id');
         $textareacontent = null;
         if($request->t != null) {
             $template = Template::find($request->t);
@@ -62,7 +67,10 @@ class DocumentController extends Controller
             $textareacontent = $template->content;
         }
         return view('document.create')
-            ->with('textareacontent',$textareacontent);
+            ->with('documents',$documents)
+            ->with('textareacontent',$textareacontent)
+            ->with('showAll',$showAll)
+            ->with('mode','create');
     }
 
     private function generateRandomString($length = 6) {
@@ -132,7 +140,7 @@ class DocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         /**
          * NOTE: September 11, 2024
@@ -162,9 +170,14 @@ class DocumentController extends Controller
             ->with('myturn',$myturn)
             ->with('hasreject',$hasreject);
         */
+        $showAll = $request->all=='1'?true:false;
+        $user = Auth::user();
+        $documents = DocumentRoute::where('user_id',$user->id)->get();
+        if($showAll && Auth::user()->can('list all documents'))
+            $documents = DocumentRoute::all()->unique('document_id');
 
-        $document = Document::find($id);
-        $document??abort('404','Document does not exist.');
+        $selectedDocument = Document::find($id);
+        $selectedDocument??abort('404','Document does not exist.');
         // check if user is in route
         // check if user can edit. Rule is current user only except when state is 'released'
         if(Auth::guest()) {
@@ -175,10 +188,13 @@ class DocumentController extends Controller
             $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
         }
         
-        return view('document.view')
-            ->with('document',$document)
+        return view('document.index')
+            ->with('documents',$documents)
+            ->with('showAll',$showAll)
+            ->with('selectedDocument',$selectedDocument)
             ->with('isUserInRoute',$isUserInRoute)
-            ->with('userCanEdit',$userCanEdit);
+            ->with('userCanEdit',$userCanEdit)
+            ->with('mode','show');
 
     }
 
@@ -215,7 +231,8 @@ class DocumentController extends Controller
         return view('document.edit')
             ->with('document',$document)
             ->with('isUserInRoute',$isUserInRoute)
-            ->with('userCanEdit',$userCanEdit);
+            ->with('userCanEdit',$userCanEdit)
+            ->with('mode','edit');
     }
 
     /**
