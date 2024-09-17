@@ -1,5 +1,8 @@
 <div>
-    <h3>{{$document->title}}</h3>
+    <div class="d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{$document->title}}</h3>
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#qrModal">QR</button>
+    </div>
     <hr>
     <div>
         @foreach($document->routes as $dr)
@@ -18,7 +21,7 @@
             <h5>Attachments</h5>
             <div class="list-group">
                 @foreach ($document->attachments as $attachment)
-                    <a href="{{asset('storage/attachments/'.$attachment->url)}}" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
+                    <a href="{{asset('storage/attachments/'.$attachment->url)}}" target="_blank" class="list-group-item list-group-item-action">{{$attachment->orig_filename}}</a>
                 @endforeach
             </div>
         @endif
@@ -32,6 +35,23 @@
         <a href="{{route('document.edit',$document->id)}}" class="btn btn-sm btn-outline-secondary">Edit</a>
     </div>
     @endif
+</div>
+<div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">QR Code</h1>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                {!! QrCode::size(300)->generate(route('document.show',$document->id)) !!}
+            </div>
+            <div class="modal-footer">
+                <a href="{{route('document.printqr',$document->id)}}" class="btn btn-primary">Print Preview</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 @if(!$userCanEdit)
 <div class="modal fade" id="confirmReceiptModal" tabindex="-1">

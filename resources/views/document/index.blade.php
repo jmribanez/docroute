@@ -28,11 +28,14 @@
             <ul class="list-group">
                 @foreach ($documents as $document)
                 <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action">
-                    <h5 class="mb-0 mt-1">{{$document->document->title}}</h5>
-                    <p class="mb-1">Created by: {{$document->document->user->name_first . " " . $document->document->user->name_family . " on " . $document->document->created_at}}</p>
+                    <p class="mb-0 fw-bold">{{$document->document->title}}</p>
+                    <p class="mb-0 small">Created by: {{$document->document->user->name_first . " " . $document->document->user->name_family . " on " . $document->document->created_at}}</p>
                 </a>
                 @endforeach
             </ul>
+            <div class="my-1">
+                {!!$documents->links()!!}
+            </div>
             @else
             <div class="alert alert-secondary" role="alert">
                 There are no documents.

@@ -41,7 +41,7 @@
             </div>
             <div class="mb-3">
                 <label for="inputfile_attachments">Add File Attachments</label>
-                <input type="file" name="file_attachments[]" id="inputfile_attachments" class="form-control" multiple>
+                <input type="file" name="file_attachments[]" id="inputfile_attachments" class="form-control" accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .jpg, .jpeg, .png" multiple>
             </div>
         </div>
         <div class="card-footer p-3 d-flex justify-content-between align-items-center">

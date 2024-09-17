@@ -215,4 +215,16 @@ class DocumentRouteController extends Controller
             ->with('status','warning')
             ->with('message','Routes have been reset');
     }
+
+    public function setAction(Request $request, string $id) {
+        $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
+        if(!$userCanEdit) {
+            abort('403','Action not permitted for this user.');
+        }
+        $documentRoute = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first();
+        $documentRoute->action = $request->action;
+        $documentRoute->acted_on = date("Y-m-d H:i:s");
+        $documentRoute->comment = $request->comment;
+        $documentRoute->update();
+    }
 }

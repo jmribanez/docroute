@@ -21,7 +21,7 @@ class DocumentController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['show']]);
         // 9/11: Commented as the edit must be viewable publicly if and only if external_party is not null
     }
 
@@ -30,7 +30,6 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $this->middleware('auth');
         /**
          * Note: Have a can('see-own-docs') and can('see-all-docs')
          * You get the idea.
@@ -38,11 +37,12 @@ class DocumentController extends Controller
         $showAll = $request->all=='1'?true:false;
         //$shared_documents = null; /* TODO: Update this with documents that don't belong to you but you are in the route. */
         $user = Auth::user();
-        $documents = DocumentRoute::where('user_id',$user->id)->get();
+        $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
+        // $documents = DocumentRoute::all()->unique('document_id');
         // $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
         
         if($showAll && Auth::user()->can('list all documents'))
-            $documents = DocumentRoute::all()->unique('document_id');
+            $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
         return view('document.index')
             ->with('documents',$documents)
             ->with('showAll',$showAll)
@@ -54,12 +54,11 @@ class DocumentController extends Controller
      */
     public function create(Request $request)
     {
-        $this->middleware('auth');
         $showAll = $request->all=='1'?true:false;
         $user = Auth::user();
-        $documents = DocumentRoute::where('user_id',$user->id)->get();
+        $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
         if($showAll && Auth::user()->can('list all documents'))
-            $documents = DocumentRoute::all()->unique('document_id');
+            $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
         $textareacontent = null;
         if($request->t != null) {
             $template = Template::find($request->t);
@@ -91,7 +90,6 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $this->middleware('auth');
         $length = 6;
         $document = new Document;
         $document->id = $this->generateRandomString(6);
@@ -105,7 +103,7 @@ class DocumentController extends Controller
 
         // check if it has attachments.
         if($request->hasFile('file_attachments')) {
-            $allowedFileExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+            $allowedFileExtension = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png'];
             $files = $request->file('file_attachments');
             foreach($files as $file) {
                 $filename = $file->getClientOriginalName();
@@ -184,9 +182,9 @@ class DocumentController extends Controller
         } else {
             $showAll = $request->all=='1'?true:false;
             $user = Auth::user();
-            $documents = DocumentRoute::where('user_id',$user->id)->get();
+            $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
             if($showAll && Auth::user()->can('list all documents'))
-                $documents = DocumentRoute::all()->unique('document_id');
+                $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
 
             $selectedDocument = Document::find($id);
             $selectedDocument??abort('404','Document does not exist.');
@@ -200,9 +198,6 @@ class DocumentController extends Controller
             ->with('userCanEdit',$userCanEdit)
             ->with('mode','show');
         }
-        
-        
-
     }
 
     /**
@@ -210,7 +205,6 @@ class DocumentController extends Controller
      */
     public function edit(string $id)
     {
-        $this->middleware('auth');
         /**
          * NOTE: Sept 11, 2024
          * This is old complicated code.
@@ -234,7 +228,7 @@ class DocumentController extends Controller
         $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
         if(!$isUserInRoute)
             return redirect()->route('document.show',$id);
-            $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
+        $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
         return view('document.edit')
             ->with('document',$document)
             ->with('isUserInRoute',$isUserInRoute)
@@ -247,8 +241,6 @@ class DocumentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->middleware('auth');
-
         $length = 6;
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
@@ -260,7 +252,7 @@ class DocumentController extends Controller
 
         // check if it has attachments.
         if($request->hasFile('file_attachments')) {
-            $allowedFileExtension = ['pdf', 'jpg', 'jpeg', 'png'];
+            $allowedFileExtension = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png'];
             $files = $request->file('file_attachments');
             foreach($files as $file) {
                 $filename = $file->getClientOriginalName();
@@ -288,7 +280,6 @@ class DocumentController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $this->middleware('auth');
         $document = Document::find($id);
         $document??abort('404','Document does not exist.');
         $attachments = $document->attachments;
@@ -305,5 +296,12 @@ class DocumentController extends Controller
         return redirect('/document')
             ->with('status','success')
             ->with('message', 'Document titled ' . $document->title . ' has been deleted.');
+    }
+
+    public function printQR(string $id) {
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        return view('document.printqr')
+            ->with('document',$document);
     }
 }
