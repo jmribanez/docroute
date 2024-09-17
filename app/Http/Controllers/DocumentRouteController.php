@@ -226,5 +226,9 @@ class DocumentRouteController extends Controller
         $documentRoute->acted_on = date("Y-m-d H:i:s");
         $documentRoute->comment = $request->comment;
         $documentRoute->update();
+
+        return redirect('/document/'.$id)
+            ->with('status','success')
+            ->with('message','Action has been saved.');
     }
 }

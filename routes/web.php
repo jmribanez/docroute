@@ -40,3 +40,4 @@ Route::post('/approveDocument', [DocumentRouteController::class, 'approveDocumen
 Route::post('/resetRoute/{id}', [DocumentRouteController::class, 'resetRoute'])->name('documentRoute.resetRoute');
 Route::get('/findUser/{searchname}',[UserController::class, 'ajax_findUser'])->name('user.find');
 Route::get('/qr/{id}', [DocumentController::class, 'printQR'])->name('document.printqr');
+Route::post('/setAction/{id}', [DocumentRouteController::class, 'setAction'])->name('documentroute.setaction');

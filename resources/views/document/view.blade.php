@@ -57,6 +57,8 @@
                             <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
                             <div>
                                 <p class="small mb-0">{{$dr->state}} on {{$dr->routed_on}}</p>
+                                @if($dr->action!=null) <p class="small mb-0">{{$dr->action}} on {{$dr->acted_on}}</p>  @endif
+                                @if($dr->comment!=null) <p class="small mb-0">Comment: {{$dr->comment}}</p> @endif
                             </div>
                         </li>
                         @endforeach
