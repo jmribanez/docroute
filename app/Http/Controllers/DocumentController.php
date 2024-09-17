@@ -170,31 +170,38 @@ class DocumentController extends Controller
             ->with('myturn',$myturn)
             ->with('hasreject',$hasreject);
         */
-        $showAll = $request->all=='1'?true:false;
-        $user = Auth::user();
-        $documents = DocumentRoute::where('user_id',$user->id)->get();
-        if($showAll && Auth::user()->can('list all documents'))
-            $documents = DocumentRoute::all()->unique('document_id');
-
-        $selectedDocument = Document::find($id);
-        $selectedDocument??abort('404','Document does not exist.');
+        
         // check if user is in route
         // check if user can edit. Rule is current user only except when state is 'released'
         if(Auth::guest()) {
+            $selectedDocument = Document::find($id);
             $isUserInRoute = false;
             $userCanEdit = false;
+            return view('document.view')
+                ->with('document',$selectedDocument)
+                ->with('isUserInRoute',$isUserInRoute)
+                ->with('userCanEdit',$userCanEdit);
         } else {
+            $showAll = $request->all=='1'?true:false;
+            $user = Auth::user();
+            $documents = DocumentRoute::where('user_id',$user->id)->get();
+            if($showAll && Auth::user()->can('list all documents'))
+                $documents = DocumentRoute::all()->unique('document_id');
+
+            $selectedDocument = Document::find($id);
+            $selectedDocument??abort('404','Document does not exist.');
             $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
             $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
-        }
-        
-        return view('document.index')
+            return view('document.index')
             ->with('documents',$documents)
             ->with('showAll',$showAll)
             ->with('selectedDocument',$selectedDocument)
             ->with('isUserInRoute',$isUserInRoute)
             ->with('userCanEdit',$userCanEdit)
             ->with('mode','show');
+        }
+        
+        
 
     }
 

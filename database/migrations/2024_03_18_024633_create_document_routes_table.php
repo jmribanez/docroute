@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('state');
             // $table->integer('action_order');
             $table->string('action')->nullable();
-            // $table->dateTime('acted_on')->nullable();
+            $table->dateTime('acted_on')->nullable();
             // $table->foreignId('sender_id')->nullable();
             // $table->dateTime('sent_on')->nullable();
             $table->string('comment')->nullable();

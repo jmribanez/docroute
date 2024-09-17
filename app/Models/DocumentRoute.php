@@ -11,7 +11,7 @@ class DocumentRoute extends Model
     use HasFactory;
 
    //  protected $fillable = ['document_id','office_id','user_id','received_on','action_order','action','acted_on','sender_id','sent_on','comment'];
-   protected $fillable = ['document_id','office_id','user_id','routed_on','state','action','comment'];
+   protected $fillable = ['document_id','office_id','user_id','routed_on','state','action','acted_on','comment'];
 
     /**
      * NOTE: Apr 4
@@ -26,6 +26,9 @@ class DocumentRoute extends Model
      * Removed 'acted_on'
      * Removed 'sender_id'
      * Removed 'sent_on'
+     * 
+     * NOTE: September 17, 2024
+     * Returned the acted_on field because when the user acts on a document may be different.
      */
 
      public function user() : BelongsTo {
