@@ -57,12 +57,28 @@
                     </div>
                     <ul class="list-group list-group-flush">
                         @foreach ($document->routes as $dr)
-                        <li class="list-group-item">
-                            <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
+                        <li class="list-group-item d-flex">
+                            <?php 
+                            $icon = '<i class="bi bi-envelope-paper-fill me-1"></i>';
+                            switch($dr->state) {
+                                case 'Created':
+                                $icon = '<i class="bi bi-pencil-fill me-1"></i>';
+                                break;
+                                case 'Completed':
+                                $icon = '<i class="bi bi-check-circle-fill me-1"></i>';
+                                break;
+                            }
+                            ?>
+                            <div class="pe-1">
+                                {!!$icon!!}
+                            </div>
                             <div>
-                                <p class="small mb-0">{{$dr->state}} on {{$dr->routed_on}}</p>
-                                @if($dr->action!=null) <p class="small mb-0">{{$dr->action}} on {{$dr->acted_on}}</p>  @endif
-                                @if($dr->comment!=null) <p class="small mb-0">Comment: {{$dr->comment}}</p> @endif
+                                <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
+                                <div>
+                                    <p class="small mb-0">{{$dr->state}} on {{$dr->routed_on}}</p>
+                                    @if($dr->action!=null) <p class="small mb-0">{{$dr->action}} on {{$dr->acted_on}}</p>  @endif
+                                    @if($dr->comment!=null) <p class="small mb-0">Comment: {{$dr->comment}}</p> @endif
+                                </div>
                             </div>
                         </li>
                         @endforeach

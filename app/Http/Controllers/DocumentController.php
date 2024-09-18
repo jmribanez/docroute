@@ -40,11 +40,12 @@ class DocumentController extends Controller
         $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
         // $documents = DocumentRoute::all()->unique('document_id');
         // $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
-        
+        $selectedDocument = null;
         if($showAll && Auth::user()->can('list all documents'))
             $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
         return view('document.index')
             ->with('documents',$documents)
+            ->with('selectedDocument',$selectedDocument)
             ->with('showAll',$showAll)
             ->with('mode','index');
     }

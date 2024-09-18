@@ -27,7 +27,7 @@
             @if(count($documents)>0)
             <ul class="list-group">
                 @foreach ($documents as $document)
-                <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action">
+                <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action {{$document->document->id==($selectedDocument->id??0)?'bg-info-subtle':''}}">
                     <p class="mb-0 fw-bold">{{$document->document->title}}</p>
                     <p class="mb-0 small">Created by: {{$document->document->user->name_first . " " . $document->document->user->name_family . " on " . $document->document->created_at}}</p>
                 </a>

@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-sm-4 mb-3">
                             <h3 class="mb-3">Photo</h3>
-                            <img src="{{($user->user_photo_url!=null)?asset('storage/user_photos/'.$user->user_photo_url):Storage::url('static/images/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
+                            <img src="{{($user->user_photo_url!=null)?asset('storage/user_photos/'.$user->user_photo_url):asset('storage/user_photos/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
                         </div>
                         <div class="col-sm-8 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">

@@ -1,7 +1,7 @@
-<div>
+<div class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
         <h3 class="mb-0">{{$document->title}}</h3>
-        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#qrModal">QR</button>
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#qrModal"><i class="bi bi-qr-code"></i> QR</button>
     </div>
     <hr>
     <div>
@@ -17,8 +17,17 @@
             $bgtextcolor = "text-danger-emphasis bg-danger-subtle";
             break;
         }
+        $icon = '<i class="bi bi-envelope-paper-fill me-1"></i>';
+        switch($dr->state) {
+            case 'Created':
+            $icon = '<i class="bi bi-pencil-fill me-1"></i>';
+            break;
+            case 'Completed':
+            $icon = '<i class="bi bi-check-circle-fill me-1"></i>';
+            break;
+        }
         ?>
-        <span class="d-inline-block m-1 px-2 rounded-pill {{$bgtextcolor}} fw-normal"><abbr class="small text-decoration-none" title="{{$dr->routed_on}}">{{$dr->user->name_first.' '.$dr->user->name_family}}</abbr></span>
+        <span class="d-inline-block m-1 px-2 rounded-pill {{$bgtextcolor}} fw-normal"><abbr class="small text-decoration-none" title="{{$dr->routed_on}}">{!!$icon!!} {{$dr->user->name_first.' '.$dr->user->name_family}}</abbr></span>
         @endforeach
         @if(!$userCanEdit && $isUserInRoute && !$routeIsFinished)
         <span type="button" class="d-inline-block m-1 px-2 rounded-pill text-white bg-primary fw-normal" data-bs-toggle="modal" data-bs-target="#confirmReceiptModal">Receive</span>
@@ -27,7 +36,9 @@
     </div>
     <hr>
     @if($isUserInRoute)
+    <div class="flex-fill">
         {!!$document->description!!}
+    </div>
         @if (count($document->attachments)>0)
             <hr>
             <h5>Attachments</h5>
@@ -38,8 +49,10 @@
             </div>
         @endif
     @else
+    <div>
         <p>You must receive the document first before being able to read the contents.</p>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmReceiptModal">Receive</button>
+    </div>
     @endif
     @if($userCanEdit)
     <hr>
@@ -60,12 +73,28 @@
             <div class="modal-body">
                 <ul class="list-group list-group-flush">
                     @foreach ($document->routes as $dr)
-                    <li class="list-group-item">
-                        <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
+                    <li class="list-group-item d-flex">
+                        <?php 
+                        $icon = '<i class="bi bi-envelope-paper-fill me-1"></i>';
+                        switch($dr->state) {
+                            case 'Created':
+                            $icon = '<i class="bi bi-pencil-fill me-1"></i>';
+                            break;
+                            case 'Completed':
+                            $icon = '<i class="bi bi-check-circle-fill me-1"></i>';
+                            break;
+                        }
+                        ?>
+                        <div class="pe-1">
+                            {!!$icon!!}
+                        </div>
                         <div>
-                            <p class="small mb-0">{{$dr->state}} on {{$dr->routed_on}}</p>
-                            @if($dr->action!=null) <p class="small mb-0">{{$dr->action}} on {{$dr->acted_on}}</p>  @endif
-                            @if($dr->comment!=null) <p class="small mb-0">Comment: {{$dr->comment}}</p> @endif
+                            <p class="fw-semibold mb-0"><a href="{{route('user.show',$dr->user_id)}}" class="text-body-secondary text-decoration-none">{{$dr->user->name_first . " " . $dr->user->name_family}}</a></p>
+                            <div>
+                                <p class="small mb-0">{{$dr->state}} on {{$dr->routed_on}}</p>
+                                @if($dr->action!=null) <p class="small mb-0">{{$dr->action}} on {{$dr->acted_on}}</p>  @endif
+                                @if($dr->comment!=null) <p class="small mb-0">Comment: {{$dr->comment}}</p> @endif
+                            </div>
                         </div>
                     </li>
                     @endforeach
