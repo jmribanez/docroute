@@ -28,7 +28,7 @@ class HomeController extends Controller
     {
         $shared_documents = null; /* TODO: Replace with docs where owner is in the document route. */
         // $documents = Document::where('user_id',Auth::user()->id)->union($shared_documents)->get();
-        $documents = Document::all();
+        $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->get();
         // $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
         
         // $approvals = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->where('action','Approve')->join('documents','documents.id','=','document_routes.document_id')->get();

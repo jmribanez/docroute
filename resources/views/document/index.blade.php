@@ -54,7 +54,7 @@
                         <x-document.create />
                         @break
                     @case('show')
-                        <x-document.show :document="$selectedDocument" :isUserInRoute="$isUserInRoute" :userCanEdit="$userCanEdit" />
+                        <x-document.show :document="$selectedDocument" :isUserInRoute="$isUserInRoute" :userCanEdit="$userCanEdit" :routeIsFinished="$routeIsFinished" />
                         @break
                     @default
                         

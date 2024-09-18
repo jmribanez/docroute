@@ -23,8 +23,8 @@
                         @if(count($documents)>0)
                         <ul class="list-group">
                             @foreach ($documents as $document)
-                            <a href="{{route('document.show',$document->id)}}" class="list-group-item list-group-item-action">
-                                <h5 class="mb-0 mt-1">{{$document->title}}</h5>
+                            <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action">
+                                <h5 class="mb-0 mt-1">{{$document->document->title}}</h5>
                                 <p class="mb-1">Created by: {{$document->user->name_first . " " . $document->user->name_family . " on " . $document->created_at}}</p>
                             </a>
                             @endforeach

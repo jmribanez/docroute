@@ -32,12 +32,16 @@
                     @endif
                 @else
                     <div class="card-body p-3">
+                        @if(!$routeIsFinished)
                         <p>You must receive the document first before being able to read the contents.</p>
                         <form action="{{route('documentroute.confirm',$document->id)}}" method="post">
                             @csrf
                             <p class="small">By clicking the Receive button, I confirm that I have the physical documents with me.</p>
                             <input type="submit" value="Receive" class="btn btn-primary">
                         </form>
+                        @else
+                        <p>The document routing has been finished.</p>
+                        @endif
                     </div>
                 @endif
                 <div class="card-footer p-3">

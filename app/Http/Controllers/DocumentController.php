@@ -175,10 +175,12 @@ class DocumentController extends Controller
             $selectedDocument = Document::find($id);
             $isUserInRoute = false;
             $userCanEdit = false;
+            $routeIsFinished = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->state == 'Completed'?true:false;
             return view('document.view')
                 ->with('document',$selectedDocument)
                 ->with('isUserInRoute',$isUserInRoute)
-                ->with('userCanEdit',$userCanEdit);
+                ->with('userCanEdit',$userCanEdit)
+                ->with('routeIsFinished',$routeIsFinished);
         } else {
             $showAll = $request->all=='1'?true:false;
             $user = Auth::user();
@@ -189,13 +191,15 @@ class DocumentController extends Controller
             $selectedDocument = Document::find($id);
             $selectedDocument??abort('404','Document does not exist.');
             $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
-            $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
+            $userCanEdit = (DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id && DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->state != 'Completed')?true:false;
+            $routeIsFinished = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->state == 'Completed'?true:false;
             return view('document.index')
             ->with('documents',$documents)
             ->with('showAll',$showAll)
             ->with('selectedDocument',$selectedDocument)
             ->with('isUserInRoute',$isUserInRoute)
             ->with('userCanEdit',$userCanEdit)
+            ->with('routeIsFinished',$routeIsFinished)
             ->with('mode','show');
         }
     }

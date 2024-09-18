@@ -20,7 +20,7 @@
         ?>
         <span class="d-inline-block m-1 px-2 rounded-pill {{$bgtextcolor}} fw-normal"><abbr class="small text-decoration-none" title="{{$dr->routed_on}}">{{$dr->user->name_first.' '.$dr->user->name_family}}</abbr></span>
         @endforeach
-        @if(!$userCanEdit && $isUserInRoute)
+        @if(!$userCanEdit && $isUserInRoute && !$routeIsFinished)
         <span type="button" class="d-inline-block m-1 px-2 rounded-pill text-white bg-primary fw-normal" data-bs-toggle="modal" data-bs-target="#confirmReceiptModal">Receive</span>
         @endif
         {{--<span class="d-inline-block m-1 px-2 rounded-pill text-secondary-emphasis bg-secondary-subtle fw-normal"><abbr class="small text-decoration-none" title="Sample date">Juan Dela Cruz</abbr></span> --}}
@@ -45,7 +45,8 @@
     <hr>
     <div>
         <a href="{{route('document.edit',$document->id)}}" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
-        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#actionModal">Set action</button>
+        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#actionModal">Set action</button>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#finishModal">Finish route</button>
     </div>
     @endif
 </div>
@@ -130,14 +131,42 @@
                         <option disabled selected>Select an option</option>
                         <option value="Signed">Signed</option>
                         <option value="Declined">Declined</option>
-                        <option value="Released">Released</option>
-                        <option value="Archived">Archived</option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="txtComment" class="form-label">Comments</label>
                     <textarea name="comment" id="txtComment" class="form-control"></textarea>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <input type="submit" value="Apply" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="finishModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{route('documentroute.finishroute',$document->id)}}" method="post" class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Finish route</h1>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @csrf
+                <div class="mb-3">
+                    <label for="selAction" class="form-label">Action</label>
+                    <select name="action" id="selAction" class="form-select">
+                        <option disabled selected>Select an option</option>
+                        <option value="Released">Released</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="txtComment" class="form-label">Comments</label>
+                    <textarea name="comment" id="txtComment" class="form-control"></textarea>
+                </div>
+                <p class="mb-3 small">Finishing a document route prevents further editing.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

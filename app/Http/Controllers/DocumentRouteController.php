@@ -231,4 +231,26 @@ class DocumentRouteController extends Controller
             ->with('status','success')
             ->with('message','Action has been saved.');
     }
+
+    public function finishRoute(Request $request, string $id) {
+        $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
+        if(!$userCanEdit) {
+            abort('403','Action not permitted for this user.');
+        }
+        $document = Document::find($id);
+        $document??abort('404','Document does not exist.');
+        $docroute = new DocumentRoute;
+        $docroute->document_id = $id;
+        $docroute->office_id = Auth::user()->office_id;
+        $docroute->user_id = Auth::user()->id;
+        $docroute->routed_on = date("Y-m-d H:i:s");
+        $docroute->state = 'Completed';
+        $docroute->action = $request->action;
+        $docroute->acted_on = date("Y-m-d H:i:s");
+        $docroute->comment = $request->comment;
+        $docroute->save();
+        return redirect('/document/'.$id)
+            ->with('status','success')
+            ->with('message','Route has been completed.');
+    }
 }

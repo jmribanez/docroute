@@ -12,7 +12,7 @@ class show extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public Document $document, public $isUserInRoute, public $userCanEdit)
+    public function __construct(public Document $document, public $isUserInRoute, public $userCanEdit, public $routeIsFinished)
     {
         
     }

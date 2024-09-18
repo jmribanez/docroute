@@ -36,7 +36,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="txtExternalParty" class="form-label">External Party</label>
-                    <input type="text" name="external_party" id="txtExternalParty" class="form-control">
+                    <input type="text" name="external_party" id="txtExternalParty" class="form-control" value="{{$document->external_party}}" >
                 </div>
             </div>
             <div class="mb-3">
