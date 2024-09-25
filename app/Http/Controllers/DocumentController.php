@@ -25,6 +25,24 @@ class DocumentController extends Controller
         // 9/11: Commented as the edit must be viewable publicly if and only if external_party is not null
     }
 
+    private function castToDocumentRoute($record) {
+        $documents = array();
+        foreach($record as $r) {
+            $d = new DocumentRoute();
+            $d->id = $r->id;
+            $d->document_id = $r->document_id;
+            $d->office_id = $r->office_id;
+            $d->user_id = $r->user_id;
+            $d->routed_on = $r->routed_on;
+            $d->state = $r->state;
+            $d->action = $r->action;
+            $d->acted_on = $r->acted_on;
+            $d->comment = $r->comment;
+            array_push($documents, $d);
+        }
+        return $documents;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -37,12 +55,13 @@ class DocumentController extends Controller
         $showAll = $request->all=='1'?true:false;
         //$shared_documents = null; /* TODO: Update this with documents that don't belong to you but you are in the route. */
         $user = Auth::user();
-        $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
+        // $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
+        $documents = $this->castToDocumentRoute(DocumentRoute::getDocumentByUser(Auth::user()->id));
         // $documents = DocumentRoute::all()->unique('document_id');
         // $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
         $selectedDocument = null;
         if($showAll && Auth::user()->can('list all documents'))
-            $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
+            $documents = $this->castToDocumentRoute(DocumentRoute::getAllDocuments());
         return view('document.index')
             ->with('documents',$documents)
             ->with('selectedDocument',$selectedDocument)
@@ -57,9 +76,9 @@ class DocumentController extends Controller
     {
         $showAll = $request->all=='1'?true:false;
         $user = Auth::user();
-        $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
+        $documents = DocumentRoute::getDocumentByUser(Auth::user()->id);
         if($showAll && Auth::user()->can('list all documents'))
-            $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
+            $documents = DocumentRoute::getAllDocuments();
         $textareacontent = null;
         if($request->t != null) {
             $template = Template::find($request->t);
@@ -185,9 +204,9 @@ class DocumentController extends Controller
         } else {
             $showAll = $request->all=='1'?true:false;
             $user = Auth::user();
-            $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->paginate(10);
+            $documents = $this->castToDocumentRoute(DocumentRoute::getDocumentByUser(Auth::user()->id));
             if($showAll && Auth::user()->can('list all documents'))
-                $documents = DocumentRoute::orderBy('created_at','DESC')->paginate(10);
+                $documents = $this->castToDocumentRoute(DocumentRoute::getAllDocuments());
 
             $selectedDocument = Document::find($id);
             $selectedDocument??abort('404','Document does not exist.');
@@ -231,9 +250,9 @@ class DocumentController extends Controller
         // check if user is in route
         // check if user can edit. Rule is current user only except when state is 'released'
         $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
-        if(!$isUserInRoute)
+        $userCanEdit = (DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id && DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->state != 'Completed')?true:false;
+        if(!$isUserInRoute || !$userCanEdit)
             return redirect()->route('document.show',$id);
-        $userCanEdit = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id?true:false;
         return view('document.edit')
             ->with('document',$document)
             ->with('isUserInRoute',$isUserInRoute)

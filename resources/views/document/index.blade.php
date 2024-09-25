@@ -29,13 +29,13 @@
                 @foreach ($documents as $document)
                 <a href="{{route('document.show',$document->document->id)}}" class="list-group-item list-group-item-action {{$document->document->id==($selectedDocument->id??0)?'bg-info-subtle':''}}">
                     <p class="mb-0 fw-bold">{{$document->document->title}}</p>
-                    <p class="mb-0 small">Created by: {{$document->document->user->name_first . " " . $document->document->user->name_family . " on " . $document->document->created_at}}</p>
+                    <p class="mb-0 small">{{$document->document->routes->last()->action??$document->document->routes->last()->state}} by: {{$document->document->routes->last()->user->name_first . " " . $document->document->routes->last()->user->name_family . " on " . $document->document->routes->last()->routed_on}}</p>
                 </a>
                 @endforeach
             </ul>
-            <div class="my-1">
+            {{-- <div class="my-1">
                 {!!$documents->links()!!}
-            </div>
+            </div> --}}
             @else
             <div class="alert alert-secondary" role="alert">
                 There are no documents.

@@ -14,7 +14,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light shadow-sm border-bottom border-warning border-3">
+        <nav class="navbar navbar-expand-md sticky-top navbar-light shadow-sm border-bottom border-warning border-3">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Document Routing System') }}

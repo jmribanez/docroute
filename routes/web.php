@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentRouteController;
 use App\Http\Controllers\OfficeController;
@@ -42,3 +43,4 @@ Route::get('/findUser/{searchname}',[UserController::class, 'ajax_findUser'])->n
 Route::get('/qr/{id}', [DocumentController::class, 'printQR'])->name('document.printqr');
 Route::post('/setAction/{id}', [DocumentRouteController::class, 'setAction'])->name('documentroute.setaction');
 Route::post('/finishRoute/{id}', [DocumentRouteController::class, 'finishRoute'])->name('documentroute.finishroute');
+Route::post('/chat', [ChatController::class, 'chat'])->name('chat'); // access using AJAX
