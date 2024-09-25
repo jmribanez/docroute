@@ -42,14 +42,7 @@
             </div>
         </div>
         <div class="col-sm-6">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h3 class="mb-3">Approvals</h3>
-                    <div class="p-3">
-                        
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
