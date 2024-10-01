@@ -44,3 +44,7 @@ Route::get('/qr/{id}', [DocumentController::class, 'printQR'])->name('document.p
 Route::post('/setAction/{id}', [DocumentRouteController::class, 'setAction'])->name('documentroute.setaction');
 Route::post('/finishRoute/{id}', [DocumentRouteController::class, 'finishRoute'])->name('documentroute.finishroute');
 Route::post('/chat', [ChatController::class, 'chat'])->name('chat'); // access using AJAX
+
+Route::get('/offline', function() {
+    return view('vendor/laravelpwa/offline');
+});
