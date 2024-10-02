@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\DocumentRoute;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -99,12 +100,19 @@ class DocumentRouteController extends Controller
     }
 
     /**
+     * METHOD: POST
      * NOTE: Sep 11, 2024
      * This function will no longer be used.
+     * 
+     * NOTE: Oct 2, 2024
+     * This function will be used again but will be modified to work with the new
+     * Notification model.
      */
     public function addRecepients(Request $request) {
         $document_id = $request->document_id;
+        $comment = $request->comment;
         $recepients = json_decode($request->recepients);
+        $sender_id = Auth::user()->id;
         $document = Document::find($document_id);
         $document??abort('404','Document does not exist.');
         foreach($recepients as $r) {
@@ -112,34 +120,41 @@ class DocumentRouteController extends Controller
             if($user==null)
                 continue;
             // Check if user is in the document route
-            $docroute = DocumentRoute::where('user_id',$r->id)->where('document_id',$document_id)->first();
-            if($docroute != null)
-                continue;
-            $docroute = DocumentRoute::where('document_id',$document_id)->orderBy('action_order','DESC')->first();
-            $action_order = intval($docroute->action_order) + 1;
-            $docroute = new DocumentRoute;
-            $docroute->document_id = $document_id;
-            $docroute->office_id = $user->office->id;
-            $docroute->user_id = $user->id;
-            $docroute->action_order = $action_order;
-            $docroute->action = $r->action;
-            $docroute->save();
+            // $docroute = DocumentRoute::where('user_id',$r->id)->where('document_id',$document_id)->first();
+            // if($docroute != null)
+            //     continue;
+            // $docroute = DocumentRoute::where('document_id',$document_id)->orderBy('action_order','DESC')->first();
+            // $action_order = intval($docroute->action_order) + 1;
+            // $docroute = new DocumentRoute;
+            // $docroute->document_id = $document_id;
+            // $docroute->office_id = $user->office->id;
+            // $docroute->user_id = $user->id;
+            // $docroute->action_order = $action_order;
+            // $docroute->action = $r->action;
+            // $docroute->save();
+            $notification = new Notification();
+            $notification->document_id = $document_id;
+            $notification->sender_id = $sender_id;
+            $notification->receiver_id = $r->id;
+            $notification->comment = $comment;
+            $notification->save();
         }
 
-        $firstroute = DocumentRoute::where('document_id',$document_id)->first();
-        if($firstroute->sent_on != null) {
-            $docroutes = DocumentRoute::where('document_id',$document->id)->whereNull('sent_on')->orderBy('action_order')->get();
-            foreach($docroutes as $dr) {
-                $dr->sent_on = date("Y-m-d H:i:s");
-                $dr->sender_id = Auth::user()->id;
-                $dr->update();
-                if($dr->action == "Approve")
-                    break;
-            }
-        }
+        // $firstroute = DocumentRoute::where('document_id',$document_id)->first();
+        // if($firstroute->sent_on != null) {
+        //     $docroutes = DocumentRoute::where('document_id',$document->id)->whereNull('sent_on')->orderBy('action_order')->get();
+        //     foreach($docroutes as $dr) {
+        //         $dr->sent_on = date("Y-m-d H:i:s");
+        //         $dr->sender_id = Auth::user()->id;
+        //         $dr->update();
+        //         if($dr->action == "Approve")
+        //             break;
+        //     }
+        // }
+
         return redirect('/document/'.$document_id)
             ->with('status','success')
-            ->with('message','Recepients have been added.');
+            ->with('message','Recepients have been notified.');
     }
 
     /**
@@ -252,5 +267,14 @@ class DocumentRouteController extends Controller
         return redirect('/document/'.$id)
             ->with('status','success')
             ->with('message','Route has been completed.');
+    }
+
+    public function dismissNotification(Request $request) {
+        $notification = Notification::find($request->notification_id);
+        if($notification == null)
+            abort('404', 'Notification does not exist.');
+        $notification->dismissed_on = date("Y-m-d H:i:s");
+        $notification->update();
+        return redirect()->route('home');
     }
 }

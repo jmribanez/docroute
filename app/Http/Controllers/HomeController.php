@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\DocumentRoute;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,9 +50,10 @@ class HomeController extends Controller
         // $documents = DocumentRoute::where('user_id',Auth::user()->id)->orderBy('created_at','DESC')->get();
         $documents = $this->castToDocumentRoute(DocumentRoute::getFirst5DocumentsByUser(Auth::user()->id));
         // $unread_documents = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->whereNull('received_on')->join('documents','documents.id','=','document_routes.document_id')->get();
-        
         // $approvals = DocumentRoute::select('documents.*','document_routes.document_id')->where('document_routes.user_id',Auth::user()->id)->whereNotNull('sent_on')->where('action','Approve')->join('documents','documents.id','=','document_routes.document_id')->get();
+        $notifications = Notification::where('receiver_id',Auth::user()->id)->orderBy('created_at')->get();
         return view('home')
-            ->with('documents',$documents);
+            ->with('documents',$documents)
+            ->with('notifications',$notifications);
     }
 }

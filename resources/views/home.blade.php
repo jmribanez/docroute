@@ -42,7 +42,27 @@
             </div>
         </div>
         <div class="col-sm-6">
-            
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 class="mb-2">Notifications</h3>
+                    <div class="p-3">
+                        @if(count($notifications)>0)
+                        <ul class="list-group">
+                            @foreach ($notifications as $notification)
+                            <a href="{{route('document.show',$notification->document->id)}}" class="list-group-item list-group-item-action">
+                                <p class="mb-0 fw-bold">{{$notification->document->title}}</p>
+                                <p class="mb-0 small">Sent by {{$notification->sender->name_first}} {{$notification->sender->name_family}} on {{$notification->created_at}}</p>
+                            </a>
+                            @endforeach
+                        </ul>
+                        @else
+                        <div class="alert alert-secondary" role="alert">
+                            There are no notifications.
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

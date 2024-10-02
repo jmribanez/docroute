@@ -59,7 +59,8 @@
     <div>
         <a href="{{route('document.edit',$document->id)}}" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
         <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#actionModal">Set action</button>
-        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#finishModal">Finish route</button>
+        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#finishModal">Finish route</button>
+        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#routingModal">Notify</button>
     </div>
     @endif
 </div>
@@ -204,4 +205,88 @@
         </form>
     </div>
 </div>
+<div class="modal fade" id="routingModal" tabindex="-1" aria-labelledby="routingModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Add recepients</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="searchname" class="form-control" placeholder="Find by name" oninput="findByName()" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    {{-- <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="findByName()">Search</button> --}}
+                </div>
+                <div class="list-group mb-3" id="search_list">
+                    <div class="list-group-item disabled"><em>Empty</em></div>
+                </div>
+                <p class="mb-1"><strong>Selected Recepients</strong></p>
+                <div class="list-group mb-3" id="recepient_list">
+                    <div class="list-group-item disabled"><em>Empty</em></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-danger me-auto" onclick="clearRecepientList()">Clear selected</button>
+                <form action="{{route('documentroute.addRecepients')}}" method="post">@csrf <input type="hidden" id="txt_recepients" name="recepients"><input type="hidden" name="document_id" value="{{$document->id}}"><input type="submit" value="Add" class="btn btn-primary"></form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearRecepientList()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var userList = [];
+    var recepientList = [];
+    function displaySearchList() {
+        document.getElementById('search_list').innerHTML = "";
+        if(userList.length>0) {
+            for(i=0; i<userList.length; i++) {
+                document.getElementById('search_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action' onclick='addToList("+i+")'>" + userList[i].name_first + " " + userList[i].name_family + " (" + userList[i].office_name +")</a>";
+            }
+        } else {
+            document.getElementById('search_list').innerHTML += "<div class='list-group-item disabled'><em>Empty</em></div>";
+        }
+    }
+    function displayRecepientList() {
+        document.getElementById('recepient_list').innerHTML = "";
+        if(recepientList.length>0) {
+            for(i=0; i<recepientList.length; i++) {
+                document.getElementById('recepient_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action'>" + recepientList[i].name_first + " " + recepientList[i].name_family + " (" + recepientList[i].office_name +")</a>";
+            }
+        } else {
+            document.getElementById('recepient_list').innerHTML += "<div class='list-group-item disabled'><em>Empty</em></div>";
+        }
+    }
+    function clearRecepientList() {
+        recepientList = [];
+        displayRecepientList();
+    }
+    function findByName() {
+        var searchname = document.getElementById('searchname').value.trim();
+        if(searchname == "")
+        { userList = []; displaySearchList();}
+        else {
+            $.ajax({
+                url: '{{url("findUser") . "/"}}'+searchname,
+                type: 'GET',
+                success: function(response) {
+                    userList = response;
+                    displaySearchList();
+                }
+            });
+        }
+    }
+    function addToList(id) {
+        var user = userList[id];
+        recepientList.push(user);
+        displayRecepientList();
+        prepareToSend();
+    }
+    function removeFromList() {
+
+    }
+    function prepareToSend() {
+        document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
+    }
+</script>
 @endif
