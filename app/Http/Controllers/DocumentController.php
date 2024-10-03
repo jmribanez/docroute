@@ -212,7 +212,7 @@ class DocumentController extends Controller
             $selectedDocument??abort('404','Document does not exist.');
             $isUserInRoute = DocumentRoute::where('document_id',$id)->where('user_id',Auth::user()->id)->count()>0?true:false;
             $userCanEdit = (DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->user_id == Auth::user()->id && DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->state != 'Completed')?true:false;
-            $routeIsFinished = DocumentRoute::where('document_id',$id)->orderBy('routed_on','desc')->first()->state == 'Completed'?true:false;
+            $routeIsFinished = DocumentRoute::where('document_id',$id)->where('state','Completed')->count() > 0?true:false;
             return view('document.index')
             ->with('documents',$documents)
             ->with('showAll',$showAll)

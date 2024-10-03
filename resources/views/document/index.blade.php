@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="row">
         {{-- 1st Panel Navigation --}}
-        <div class="col-md-2 d-flex flex-column">
+        <div class="col-md-2 d-flex flex-column mb-3">
             <div class="btn-group" role="group">
                 <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
                 <div class="btn-group" role="group">
@@ -23,7 +23,7 @@
             @endcan
         </div>
         {{-- 2nd Panel Index --}}
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             @if(count($documents)>0)
             <ul class="list-group">
                 @foreach ($documents as $document)
@@ -43,7 +43,7 @@
             @endif
         </div>
         {{-- 3rd Panel Details --}}
-        <div class="col-md-6 d-flex flex-column">
+        <div class="col-md-6 d-flex flex-column mb-3">
             <div class="flex-grow-1 border rounded p-3">
                 @include('inc.message')
                 @switch($mode)

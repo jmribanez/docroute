@@ -25,7 +25,7 @@ class Notification extends Model
      * comment = short message attached to notification.
      */
 
-    protected $fillable = ['document_id', 'sender_id', 'receiver_id', 'comment','dismissed_on'];
+    protected $fillable = ['document_id', 'sender_id', 'receiver_id', 'action', 'comment','dismissed_on'];
 
     public function document() : BelongsTo {
         return $this->belongsTo(Document::class);

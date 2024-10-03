@@ -10,9 +10,9 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h3 class="mb-0">Recent Documents</h3>
                         <div class="btn-group" role="group">
-                            <a href="{{route('document.create')}}" class="btn btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
+                            <a href="{{route('document.create')}}" class="btn btn-sm btn-primary"><i class="bi bi-file-earmark-plus-fill"></i> New</a>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{route('template.index')}}">From Template</a></li>
                                 </ul>
@@ -50,8 +50,9 @@
                         <ul class="list-group">
                             @foreach ($notifications as $notification)
                             <a href="{{route('document.show',$notification->document->id)}}" class="list-group-item list-group-item-action">
-                                <p class="mb-0 fw-bold">{{$notification->document->title}}</p>
+                                <p class="mb-0 fw-bold">{{$notification->document->title}} {!!($notification->action=='Approve')?'<span class="ms-1 badge rounded-pill text-bg-info">For Approval</span>':'';!!}</p>
                                 <p class="mb-0 small">Sent by {{$notification->sender->name_first}} {{$notification->sender->name_family}} on {{$notification->created_at}}</p>
+                                @if(!empty($notification->comment))<p class="mb-0 small"><i class="bi bi-chat-left-dots"></i> {{$notification->comment}}</p>@endif
                             </a>
                             @endforeach
                         </ul>

@@ -54,13 +54,15 @@
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmReceiptModal">Receive</button>
     </div>
     @endif
-    @if($userCanEdit)
+    @if ($isUserInRoute)
     <hr>
     <div>
+        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#routingModal">Notify</button>
+        @if($userCanEdit && !$routeIsFinished)
         <a href="{{route('document.edit',$document->id)}}" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
         <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#actionModal">Set action</button>
         <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#finishModal">Finish route</button>
-        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#routingModal">Notify</button>
+        @endif
     </div>
     @endif
 </div>
@@ -145,7 +147,7 @@
     </div>
 </div>
 @endif
-@if($userCanEdit)
+@if($userCanEdit && !$routeIsFinished)
 <div class="modal fade" id="actionModal" tabindex="-1">
     <div class="modal-dialog">
         <form action="{{route('documentroute.setaction',$document->id)}}" method="post" class="modal-content">
@@ -205,17 +207,23 @@
         </form>
     </div>
 </div>
+@endif
+@if ($isUserInRoute)
 <div class="modal fade" id="routingModal" tabindex="-1" aria-labelledby="routingModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5">Add recepients</h1>
+                <h1 class="modal-title fs-5">Notify recipients</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="input-group mb-3">
                     <input type="text" id="searchname" class="form-control" placeholder="Find by name" oninput="findByName()" aria-label="Recipient's username" aria-describedby="button-addon2">
                     {{-- <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="findByName()">Search</button> --}}
+                </div>
+                <div class="form-check form-switch mb-1 {{($routeIsFinished)?'d-none':'';}}">
+                    <input class="form-check-input" type="checkbox" role="switch" id="optApprove">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Mark for approval</label>
                 </div>
                 <div class="list-group mb-3" id="search_list">
                     <div class="list-group-item disabled"><em>Empty</em></div>
@@ -224,10 +232,14 @@
                 <div class="list-group mb-3" id="recepient_list">
                     <div class="list-group-item disabled"><em>Empty</em></div>
                 </div>
+                <p class="mb-1"><strong>Comments</strong></p>
+                <div class="mb-3">
+                    <textarea id="inputcomment" rows="2" class="form-control" oninput="document.getElementById('txt_comment').value = document.getElementById('inputcomment').value;"></textarea>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-danger me-auto" onclick="clearRecepientList()">Clear selected</button>
-                <form action="{{route('documentroute.addRecepients')}}" method="post">@csrf <input type="hidden" id="txt_recepients" name="recepients"><input type="hidden" name="document_id" value="{{$document->id}}"><input type="submit" value="Add" class="btn btn-primary"></form>
+                <form action="{{route('documentroute.addRecepients')}}" method="post">@csrf <input type="hidden" id="txt_recepients" name="recepients"><input type="hidden" id="txt_comment" name="comment"><input type="hidden" name="document_id" value="{{$document->id}}"><input type="submit" value="Notify" class="btn btn-primary"></form>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearRecepientList()">Close</button>
             </div>
         </div>
@@ -241,7 +253,7 @@
         document.getElementById('search_list').innerHTML = "";
         if(userList.length>0) {
             for(i=0; i<userList.length; i++) {
-                document.getElementById('search_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action' onclick='addToList("+i+")'>" + userList[i].name_first + " " + userList[i].name_family + " (" + userList[i].office_name +")</a>";
+                document.getElementById('search_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action small' onclick='addToList("+i+")'><strong>" + userList[i].name_first + " " + userList[i].name_family + "</strong><br>" + userList[i].office_name +"</a>";
             }
         } else {
             document.getElementById('search_list').innerHTML += "<div class='list-group-item disabled'><em>Empty</em></div>";
@@ -251,7 +263,7 @@
         document.getElementById('recepient_list').innerHTML = "";
         if(recepientList.length>0) {
             for(i=0; i<recepientList.length; i++) {
-                document.getElementById('recepient_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action'>" + recepientList[i].name_first + " " + recepientList[i].name_family + " (" + recepientList[i].office_name +")</a>";
+                document.getElementById('recepient_list').innerHTML += "<a href='#' class='list-group-item list-group-item-action d-flex justify-content-between align-items-center small'><div><strong>" + recepientList[i].name_first + " " + recepientList[i].name_family + "</strong><br>" + recepientList[i].office_name +"</div><div>" + recepientList[i].action + "</div></a>";
             }
         } else {
             document.getElementById('recepient_list').innerHTML += "<div class='list-group-item disabled'><em>Empty</em></div>";
@@ -278,6 +290,8 @@
     }
     function addToList(id) {
         var user = userList[id];
+        var sel_action = (document.getElementById('optApprove').checked)?'Approve':'Notify';
+        user.action = sel_action;
         recepientList.push(user);
         displayRecepientList();
         prepareToSend();
@@ -287,6 +301,7 @@
     }
     function prepareToSend() {
         document.getElementById('txt_recepients').value = JSON.stringify(recepientList);
+        document.getElementById('txt_comment').value = document.getElementById('inputcomment').value.trim();
     }
 </script>
 @endif

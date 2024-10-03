@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('document_id');
             $table->foreignId('sender_id');
             $table->foreignId('receiver_id');
+            $table->string('action')->default('Notify');
             $table->text('comment')->nullable();
             $table->dateTime('dismissed_on')->nullable();
             $table->timestamps();

@@ -136,6 +136,7 @@ class DocumentRouteController extends Controller
             $notification->document_id = $document_id;
             $notification->sender_id = $sender_id;
             $notification->receiver_id = $r->id;
+            $notification->action = $r->action;
             $notification->comment = $comment;
             $notification->save();
         }
