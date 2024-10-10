@@ -89,6 +89,7 @@
             prompt: $('#txtprompt').val(),
             _token: '{{ csrf_token() }}',
         };
+        document.getElementById('txtprompt').value = "";
         $.ajax({
             type: 'POST',
             url: '{{route("chat")}}',
