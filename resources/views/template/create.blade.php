@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <input type="text" name="description" id="txt_description" class="form-control" placeholder="Describe this template.">
+                <input type="text" name="description" id="txt_description" class="form-control" placeholder="Describe this template." required>
             </div>
             <div class="mb-3">
                 <textarea name="content" id="txt_content" cols="30" rows="10" class="form-control" placeholder="Content of this template."></textarea>
