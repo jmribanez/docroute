@@ -80,13 +80,13 @@
             </div>
             <div class="modal-body">
                 <p>You are about to delete the document titled {{$document->title}} and its attachments.</p>
-                <p>Are you sure you want to continue? This document cannot be recovered if <strong>Permanently Delete</strong> is checked.</p>
+                <p>Are you sure you want to continue?</p>
             </div>
             <div class="modal-footer">
-                <div class="form-check me-auto small">
+                {{-- <div class="form-check me-auto small">
                     <input class="form-check-input" type="checkbox" name="permanentlyDelete" value="true" id="chkPermaDelete">
                     <label class="form-check-label" for="chkPermaDelete">Permanently Delete</label>
-                </div>
+                </div> --}}
                 <input type="submit" value="Delete" class="btn btn-danger">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
