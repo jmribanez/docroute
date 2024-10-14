@@ -313,7 +313,7 @@ class DocumentController extends Controller
                 $attachment->delete();
             }
         }
-        $documentRoutes = DocumentRoute::where('document_id',$id);
+        $documentRoutes = DocumentRoute::where('document_id',$id)->get();
         $documentRoutes->delete();
         //if($request->permanentlyDelete == "true")
             $document->forceDelete();
