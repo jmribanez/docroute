@@ -319,7 +319,6 @@ class DocumentController extends Controller
             $dr->delete();
         }
         $notifications = Notification::where('document_id',$id)->get();
-        $notifications->delete();
         foreach($notifications as $n) {
             $n->delete();
         }
