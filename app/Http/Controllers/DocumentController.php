@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attachment;
 use App\Models\Document;
 use App\Models\DocumentRoute;
+use App\Models\Notification;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -315,6 +316,8 @@ class DocumentController extends Controller
         }
         $documentRoutes = DocumentRoute::where('document_id',$id)->get();
         $documentRoutes->delete();
+        $notifications = Notification::where('document_id',$id)->get();
+        $notifications->delete();
         //if($request->permanentlyDelete == "true")
             $document->forceDelete();
         //else
