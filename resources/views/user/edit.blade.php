@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+    @include('inc.message')
     <p class="mb-0">EDITING</p>
     <h1 class="mb-3">{{$user->name_family . ", " . $user->name_first}}</h1>
     <div class="row">
