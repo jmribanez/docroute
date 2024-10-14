@@ -22,7 +22,10 @@
                         <div class="col-sm-8 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h3>Details</h3>
-                                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save</button>
+                                <div>
+                                    <button type="submit" class="btn btn-primary me-2"><i class="bi bi-check-lg"></i> Save</button>
+                                    <a href="{{route('user.show',$user->id)}}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
                             </div>
                             <div class="row g-3 align-items-center mb-3">
                                 <div class="col-sm-3">

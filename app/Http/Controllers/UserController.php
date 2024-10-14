@@ -149,7 +149,7 @@ class UserController extends Controller
             }
         }
         $user->update();
-        return redirect('/user')
+        return redirect()->route('user.edit',$id)
             ->with('status','success')
             ->with('message',$user->name_first . ' ' . $user->name_family . ' was updated.');
     }
