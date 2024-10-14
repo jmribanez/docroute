@@ -160,7 +160,9 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::find($id);
-        $user->delete();
+        // Remove old photo
+        Storage::delete('user_photos/'.$user->user_photo_url);
+        $user->forceDelete();
         return redirect('/user')
             ->with('status','success')
             ->with('message',$user->name_first . ' ' . $user->name_family . ' was deleted.');

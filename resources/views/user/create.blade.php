@@ -5,7 +5,7 @@
     <h1 class="mb-3">New user</h1>
     <div class="row">
         <div class="col-sm-9 mb-3">
-            <form class="card" action="{{route('user.store')}}" method="POST" onsubmit="confirmPassword()">
+            <form class="card" action="{{route('user.store')}}" method="POST" onsubmit="return confirmPassword(event)" enctype="multipart/form-data">
                 @csrf
                 <div class="card-body">
                     <div class="row g-4">
@@ -14,7 +14,7 @@
                             <img src="{{Storage::url('static/images/usernophoto.jpg')}}" alt="User Photo" class="img-fluid img-thumbnail">
                             <div class="mt-3">
                                 <label for="file_userphoto" class="form-label">Upload a new photo</label>
-                                <input class="form-control" type="file" id="file_userphoto">
+                                <input class="form-control" type="file" id="file_userphoto" name="user_photo">
                             </div>
                         </div>
                         <div class="col-sm-8 mb-3">
@@ -99,14 +99,16 @@
     </div>
 </div>
 <script>
-    function confirmPassword() {
+    function confirmPassword(event) {
         p1 = document.getElementById('txt_password').value;
         p2 = document.getElementById('txt_conpassword').value;
         if(p1==p2) {
             return true;
+        } else {
+            event.preventDefault();
+            alert("Password does not match its confirmation.");
+            return false;
         }
-        alert("Password does not match its confirmation.");
-        return false;
     }
 </script>
 @endsection
