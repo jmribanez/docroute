@@ -315,9 +315,14 @@ class DocumentController extends Controller
             }
         }
         $documentRoutes = DocumentRoute::where('document_id',$id)->get();
-        $documentRoutes->delete();
+        foreach($documentRoutes as $dr) {
+            $dr->delete();
+        }
         $notifications = Notification::where('document_id',$id)->get();
         $notifications->delete();
+        foreach($notifications as $n) {
+            $n->delete();
+        }
         //if($request->permanentlyDelete == "true")
             $document->forceDelete();
         //else
