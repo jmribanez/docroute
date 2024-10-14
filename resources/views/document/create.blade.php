@@ -77,6 +77,11 @@
             document.getElementById('chatMessages').innerHTML += '<div class="alert alert-light"><strong class="small">' + conversation[i].from + '</strong><br>' + conversation[i].message + '</div>';
         }
     }
+    function makeBold(sometext) {
+        var bold = /\*\*(.*?)\*\*/gm;
+        var newtext = sometext.replace(bold, '<strong>$1</strong>');            
+        return newtext;
+    }
     updateChat();
     $('#chatform').submit(function(e) {
         conversation.push({
@@ -98,7 +103,7 @@
         }).done((data) => {
             conversation.push({
                 'from': 'Assistant',
-                'message': data.choices[0].message.content,
+                'message': makeBold(data.choices[0].message.content),
             });
             updateChat();
         }).fail((err) => {
