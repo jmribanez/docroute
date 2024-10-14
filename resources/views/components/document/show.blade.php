@@ -120,7 +120,7 @@
                 {!! QrCode::size(300)->generate(route('document.show',$document->id)) !!}
             </div>
             <div class="modal-footer">
-                <a href="{{route('document.printqr',$document->id)}}" class="btn btn-primary">Print Preview</a>
+                <a href="{{route('document.printqr',$document->id)}}" class="btn btn-primary" target="_blank">Print Preview</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>

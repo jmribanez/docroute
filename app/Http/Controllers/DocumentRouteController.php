@@ -265,6 +265,10 @@ class DocumentRouteController extends Controller
         $docroute->acted_on = date("Y-m-d H:i:s");
         $docroute->comment = $request->comment;
         $docroute->save();
+        $notifications = Notification::where('document_id',$id)->get();
+        foreach($notifications as $n) {
+            $n->delete();
+        }
         return redirect('/document/'.$id)
             ->with('status','success')
             ->with('message','Route has been completed.');
